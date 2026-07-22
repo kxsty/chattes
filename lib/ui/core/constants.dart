@@ -1,8 +1,12 @@
 import "package:flutter/material.dart";
 
-const kBorderSide = BorderSide(style: .solid);
+const BorderSide kBorderSide = .new(style: .solid);
 
-const kDivider = Divider(height: 1);
-const kVerticalDivider = VerticalDivider(width: 1);
+const Divider kDivider = .new(height: 1);
+const VerticalDivider kVerticalDivider = .new(width: 1);
 
-final themeNotifier = ValueNotifier<ThemeMode>(.system);
+const double kPillMarginValue = 8.0;
+const EdgeInsets kPillMargin = .all(kPillMarginValue);
+
+const double kPillBorderRadiusValue = 20.0;
+const BorderRadius kPillBorderRadius = .all(.circular(kPillBorderRadiusValue));

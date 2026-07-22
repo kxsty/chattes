@@ -1,5 +1,6 @@
 import "package:chattes/data/app/dto.dart";
 import "package:chattes/ui/chat/widgets/attachments/attachment_list.dart";
+import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/core/extensions.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -78,9 +79,9 @@ class MessageWidget extends ConsumerWidget {
       position: position,
       clipBehavior: .antiAlias,
       color: theme.colorScheme.surfaceContainerLow,
-      menuPadding: const .all(0),
+      menuPadding: .zero,
       shape: RoundedRectangleBorder(
-        borderRadius: const .all(.circular(20)),
+        borderRadius: kPillBorderRadius,
         side: .new(color: theme.colorScheme.outlineVariant),
       ),
       items: [

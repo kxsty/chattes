@@ -1,3 +1,4 @@
+import "package:chattes/ui/core/constants.dart";
 import "package:flutter/material.dart";
 
 void pushResponsivePage(
@@ -15,7 +16,7 @@ void pushResponsivePage(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: const .all(.circular(20)),
+          borderRadius: kPillBorderRadius,
           side: .new(color: theme.colorScheme.outlineVariant),
         ),
         contentPadding: .zero,

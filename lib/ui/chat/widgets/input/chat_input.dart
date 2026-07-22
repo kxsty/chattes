@@ -1,5 +1,6 @@
 import "package:chattes/ui/chat/widgets/input/chat_input_attachments.dart";
 import "package:chattes/ui/chat/widgets/input/chat_input_core.dart";
+import "package:chattes/ui/core/constants.dart";
 import "package:flutter/material.dart";
 
 class ChatInputBar extends StatelessWidget {
@@ -14,9 +15,9 @@ class ChatInputBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        margin: const .all(8),
+        margin: kPillMargin,
         decoration: BoxDecoration(
-          borderRadius: const .all(.circular(20)),
+          borderRadius: kPillBorderRadius,
           color: theme.colorScheme.surfaceContainerLow,
           border: .all(color: theme.colorScheme.outlineVariant),
         ),

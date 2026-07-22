@@ -1,4 +1,5 @@
 import "package:chattes/data/app/dto.dart";
+import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/core/extensions.dart";
 import "package:flutter/material.dart";
 import "package:open_file/open_file.dart";
@@ -14,7 +15,7 @@ class AttachmentEntry extends StatelessWidget {
     final theme = Theme.of(context);
 
     return InputChip(
-      shape: RoundedRectangleBorder(borderRadius: const .all(.circular(20))),
+      shape: RoundedRectangleBorder(borderRadius: kPillBorderRadius),
       avatar: _attachmentToIcon(attachment),
       label: Text(attachment.fileName, style: theme.textTheme.bodySmall),
       onPressed: _onPressed,

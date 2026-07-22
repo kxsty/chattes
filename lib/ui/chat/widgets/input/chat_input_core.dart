@@ -1,4 +1,5 @@
 import "package:chattes/ui/chat/providers/draft.dart";
+import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/core/debouncer.dart";
 import "package:file_picker/file_picker.dart";
 import "package:flutter/material.dart";
@@ -59,7 +60,7 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
               contentPadding: .symmetric(vertical: 11),
               hintText: "Message",
               border: OutlineInputBorder(
-                borderRadius: .all(.circular(20)),
+                borderRadius: kPillBorderRadius,
                 borderSide: .none,
               ),
             ),

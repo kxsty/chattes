@@ -1,3 +1,4 @@
+import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/menu/providers/selected_chat.dart";
 import "package:chattes/ui/menu/widgets/chats/letter_avatar.dart";
 import "package:flutter/material.dart";
@@ -13,8 +14,8 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
 
     return SafeArea(
       bottom: false,
-      child: Container(
-        padding: const .all(8),
+      child: Padding(
+        padding: kPillMargin,
         child: Row(
           crossAxisAlignment: .center,
           spacing: 8,
@@ -72,11 +73,11 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
                 style: .new(
                   shape: .all(
                     RoundedRectangleBorder(
-                      borderRadius: const .all(.circular(20)),
+                      borderRadius: kPillBorderRadius,
                       side: BorderSide(color: theme.colorScheme.outlineVariant),
                     ),
                   ),
-                  padding: .all(const .all(0)),
+                  padding: .all(.zero),
                 ),
                 menuChildren: [
                   MenuItemButton(
@@ -110,7 +111,7 @@ class Pill extends StatelessWidget {
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        borderRadius: const .all(.circular(20)),
+        borderRadius: kPillBorderRadius,
         color: color ?? theme.colorScheme.surfaceContainerLow,
         border: .all(color: theme.colorScheme.outlineVariant),
       ),

@@ -49,7 +49,7 @@ class _CreateChatWidgetState extends State<CreateChatWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const .all(16),
       child: Form(
         key: _formKey,
         child: Column(
