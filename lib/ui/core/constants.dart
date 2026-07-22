@@ -10,3 +10,5 @@ const EdgeInsets kPillMargin = .all(kPillMarginValue);
 
 const double kPillBorderRadiusValue = 20.0;
 const BorderRadius kPillBorderRadius = .all(.circular(kPillBorderRadiusValue));
+
+const double kScreenWidthThreshold = 768.0;

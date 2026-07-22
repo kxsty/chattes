@@ -9,7 +9,7 @@ void pushResponsivePage(
   final mediaSize = MediaQuery.of(context).size;
   final theme = Theme.of(context);
 
-  if (mediaSize.width < 768) {
+  if (mediaSize.width < kScreenWidthThreshold) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => child));
   } else {
     showDialog(

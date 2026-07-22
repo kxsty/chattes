@@ -1,4 +1,5 @@
 import "package:chattes/ui/chat/widgets/chat_screen.dart";
+import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/menu/providers/selected_chat.dart";
 import "package:chattes/ui/menu/widgets/menu_divider.dart";
 import "package:chattes/ui/menu/widgets/menu_screen.dart";
@@ -68,6 +69,6 @@ class _WidgetTreeState extends State<WidgetTree> {
   }
 
   bool _isPhone(BoxConstraints constraints) {
-    return constraints.maxWidth < 768;
+    return constraints.maxWidth < kScreenWidthThreshold;
   }
 }
