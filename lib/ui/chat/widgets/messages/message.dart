@@ -25,7 +25,7 @@ class MessageWidget extends ConsumerWidget {
           child: Column(
             mainAxisSize: .min,
             crossAxisAlignment: .start,
-            spacing: 4,
+            spacing: 8,
             children: [
               Row(
                 children: [
@@ -42,9 +42,17 @@ class MessageWidget extends ConsumerWidget {
                 ],
               ),
 
-              if (message.text.isNotEmpty) Text(message.text),
+              if (message.attachments.isNotEmpty)
+                AttachmentList(message.attachments),
 
-              AttachmentList(message.attachments),
+              if (message.text.isNotEmpty)
+                Text(
+                  message.text,
+                  textHeightBehavior: const TextHeightBehavior(
+                    applyHeightToFirstAscent: false,
+                    applyHeightToLastDescent: false,
+                  ),
+                ),
             ],
           ),
         ),
