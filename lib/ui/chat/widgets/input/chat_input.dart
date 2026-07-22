@@ -1,8 +1,9 @@
 import "package:chattes/data/app/dto.dart";
-import "package:chattes/ui/chat/controllers/messages_notifier.dart";
+import "package:chattes/ui/chat/providers/message_draft.dart";
+import "package:chattes/ui/chat/providers/messages.dart";
 import "package:chattes/ui/chat/widgets/input/chat_input_attachments.dart";
 import "package:chattes/ui/chat/widgets/input/chat_input_text.dart";
-import "package:chattes/ui/menu/controllers/chats_notifier.dart";
+import "package:chattes/ui/menu/providers/chats.dart";
 import "package:file_picker/file_picker.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";

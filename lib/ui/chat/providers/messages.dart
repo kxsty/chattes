@@ -2,13 +2,13 @@ import "dart:async";
 
 import "package:chattes/data/app/dto.dart";
 import "package:chattes/ui/core/rust_app.dart";
-import "package:chattes/ui/menu/controllers/chats_notifier.dart";
-import "package:riverpod_annotation/riverpod_annotation.dart";
+import "package:chattes/ui/menu/providers/chats.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-part "messages_notifier.g.dart";
+final messagesProvider =
+    AsyncNotifierProvider.autoDispose<Messages, MessagesState?>(Messages.new);
 
-@riverpod
-class Messages extends _$Messages {
+class Messages extends AsyncNotifier<MessagesState?> {
   @override
   Future<MessagesState?> build() async {
     final chatId = ref.watch(selectedChatIdProvider);
@@ -114,16 +114,4 @@ class MessagesState {
       hasMorePrev: hasMorePrev ?? this.hasMorePrev,
     );
   }
-}
-
-class MessageDraft {
-  MessageDraft({this.text = "", this.attachments = const []});
-
-  String text;
-  List<PostAttachment> attachments;
-}
-
-@riverpod
-MessageDraft draft(Ref ref, int chatId) {
-  return MessageDraft();
 }

@@ -1,7 +1,7 @@
 import "dart:io";
 
 import "package:chattes/data/app/dto.dart";
-import "package:chattes/ui/menu/controllers/chats_notifier.dart";
+import "package:chattes/ui/menu/providers/chats.dart";
 import "package:file_picker/file_picker.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";

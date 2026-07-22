@@ -1,4 +1,4 @@
-import "package:chattes/ui/chat/controllers/messages_notifier.dart";
+import "package:chattes/ui/chat/providers/messages.dart";
 import "package:chattes/ui/chat/widgets/messages/message.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";

@@ -2,7 +2,7 @@ import "package:chattes/data/app/dto.dart";
 import "package:chattes/ui/core/rust_app.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-part "chats_notifier.g.dart";
+part "chats.g.dart";
 
 @riverpod
 class Chats extends _$Chats {

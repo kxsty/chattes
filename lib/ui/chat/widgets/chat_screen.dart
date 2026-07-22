@@ -1,7 +1,7 @@
 import "package:chattes/ui/chat/widgets/chat_top_bar.dart";
 import "package:chattes/ui/chat/widgets/input/chat_input.dart";
 import "package:chattes/ui/chat/widgets/messages/chat_messages.dart";
-import "package:chattes/ui/menu/controllers/chats_notifier.dart";
+import "package:chattes/ui/menu/providers/chats.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 

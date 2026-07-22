@@ -26,7 +26,6 @@ class ChatInputText extends StatelessWidget {
         Expanded(
           child: Consumer(
             builder: (context, ref, child) {
-
               return TextField(
                 controller: controller,
                 minLines: 1,

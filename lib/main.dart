@@ -1,6 +1,6 @@
 import "package:chattes/data/frb_generated.dart";
 import "package:chattes/ui/core/rust_app.dart";
-import "package:chattes/ui/menu/controllers/theme_notifier.dart";
+import "package:chattes/ui/menu/providers/theme_mode.dart";
 import "package:chattes/ui/widget_tree.dart";
 import "package:dynamic_color/dynamic_color.dart";
 import "package:flutter/material.dart";

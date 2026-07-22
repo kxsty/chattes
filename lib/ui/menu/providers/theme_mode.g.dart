@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'response_notifier.dart';
+part of 'theme_mode.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,50 +9,51 @@ part of 'response_notifier.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Layout)
-final layoutProvider = LayoutProvider._();
+@ProviderFor(ThemeModeNotifier)
+final themeModeProvider = ThemeModeNotifierProvider._();
 
-final class LayoutProvider extends $NotifierProvider<Layout, bool> {
-  LayoutProvider._()
+final class ThemeModeNotifierProvider
+    extends $NotifierProvider<ThemeModeNotifier, ThemeMode> {
+  ThemeModeNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'layoutProvider',
+        name: r'themeModeProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$layoutHash();
+  String debugGetCreateSourceHash() => _$themeModeNotifierHash();
 
   @$internal
   @override
-  Layout create() => Layout();
+  ThemeModeNotifier create() => ThemeModeNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
+  Override overrideWithValue(ThemeMode value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
+      providerOverride: $SyncValueProvider<ThemeMode>(value),
     );
   }
 }
 
-String _$layoutHash() => r'61deb83a6912b556a19b93c5a3f3f613009e2a32';
+String _$themeModeNotifierHash() => r'26e2697bed93212c77976949c19bf01b74615bc3';
 
-abstract class _$Layout extends $Notifier<bool> {
-  bool build();
+abstract class _$ThemeModeNotifier extends $Notifier<ThemeMode> {
+  ThemeMode build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<bool, bool>;
+    final ref = this.ref as $Ref<ThemeMode, ThemeMode>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
+              AnyNotifier<ThemeMode, ThemeMode>,
+              ThemeMode,
               Object?,
               Object?
             >;

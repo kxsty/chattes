@@ -1,5 +1,5 @@
 import "package:chattes/ui/chat/widgets/chat_screen.dart";
-import "package:chattes/ui/menu/controllers/chats_notifier.dart";
+import "package:chattes/ui/menu/providers/chats.dart";
 import "package:chattes/ui/menu/widgets/menu_divider.dart";
 import "package:chattes/ui/menu/widgets/menu_screen.dart";
 import "package:flutter/material.dart";

@@ -1,4 +1,4 @@
-import "package:chattes/ui/menu/controllers/theme_notifier.dart";
+import "package:chattes/ui/menu/providers/theme_mode.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
