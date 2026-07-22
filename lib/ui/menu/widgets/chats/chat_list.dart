@@ -1,0 +1,23 @@
+import "package:chattes/ui/menu/controllers/chats_notifier.dart";
+import "package:chattes/ui/menu/widgets/chats/chat_tile.dart";
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+
+class ChatList extends StatelessWidget {
+  const ChatList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final chats = ref.watch(chatsProvider).value ?? [];
+
+        return ListView.builder(
+          padding: const .only(bottom: kToolbarHeight),
+          itemCount: chats.length,
+          itemBuilder: (context, index) => ChatTile(chat: chats[index]),
+        );
+      },
+    );
+  }
+}
