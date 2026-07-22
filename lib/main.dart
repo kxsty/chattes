@@ -24,9 +24,16 @@ class App extends StatelessWidget {
         ColorScheme darkColorScheme;
 
         if (lightDynamic != null && darkDynamic != null) {
-          lightColorScheme = lightDynamic;
+          lightColorScheme = lightDynamic.copyWith(
+            outlineVariant: HSLColor.fromColor(
+              lightDynamic.outlineVariant,
+            ).withLightness(0.8).toColor(),
+          );
+
           darkColorScheme = darkDynamic.copyWith(
-            outlineVariant: darkDynamic.outlineVariant.withValues(alpha: 0.5),
+            outlineVariant: HSLColor.fromColor(
+              darkDynamic.outlineVariant,
+            ).withLightness(0.2).toColor(),
           );
         } else {
           lightColorScheme = .light();
