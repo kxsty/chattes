@@ -4,42 +4,22 @@ import "package:chattes/ui/core/extensions.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-class MessageWidget extends ConsumerStatefulWidget {
+class MessageWidget extends ConsumerWidget {
   const MessageWidget({super.key, required this.message, this.onDelete});
 
   final Message message;
   final VoidCallback? onDelete;
 
   @override
-  ConsumerState<MessageWidget> createState() => _MessageWidgetState();
-}
-
-enum MessageAction { edit, delete }
-
-class _MessageWidgetState extends ConsumerState<MessageWidget> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = .new(text: widget.message.text);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     return Material(
       color: const Color(0x00000000),
       child: InkWell(
         hoverColor: theme.hoverColor,
-        onSecondaryTapDown: _onSecondaryTapDown,
+        onSecondaryTapDown: (details) =>
+            _onSecondaryTapDown(context, ref, details),
         child: Padding(
           padding: const .symmetric(vertical: 8, horizontal: 16),
           child: Column(
@@ -50,7 +30,7 @@ class _MessageWidgetState extends ConsumerState<MessageWidget> {
               Row(
                 children: [
                   Text(
-                    widget.message.sentAt.formatTime,
+                    message.sentAt.formatTime,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.primary,
                     ),
@@ -62,14 +42,9 @@ class _MessageWidgetState extends ConsumerState<MessageWidget> {
                 ],
               ),
 
-              if (widget.message.text.isNotEmpty)
-                TextField(
-                  controller: _controller,
-                  maxLines: null,
-                  decoration: InputDecoration(border: .none),
-                ),
+              if (message.text.isNotEmpty) Text(message.text),
 
-              AttachmentList(widget.message.attachments),
+              AttachmentList(message.attachments),
             ],
           ),
         ),
@@ -77,7 +52,11 @@ class _MessageWidgetState extends ConsumerState<MessageWidget> {
     );
   }
 
-  void _onSecondaryTapDown(TapDownDetails details) async {
+  void _onSecondaryTapDown(
+    BuildContext context,
+    WidgetRef ref,
+    TapDownDetails details,
+  ) async {
     final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
 
     final position = RelativeRect.fromRect(
@@ -126,7 +105,7 @@ class _MessageWidgetState extends ConsumerState<MessageWidget> {
 
     switch (result) {
       case MessageAction.edit:
-        debugPrint("Edit clicked for message: ${widget.message.text}");
+        debugPrint("Edit clicked for message: ${message.text}");
         break;
       case MessageAction.delete:
         final confirmed = await showDialog<bool>(
@@ -146,9 +125,11 @@ class _MessageWidgetState extends ConsumerState<MessageWidget> {
           ),
         );
         if (confirmed != null && confirmed) {
-          widget.onDelete?.call();
+          onDelete?.call();
         }
         break;
     }
   }
 }
+
+enum MessageAction { edit, delete }
