@@ -47,7 +47,7 @@ class MessageWidget extends ConsumerWidget {
                 AttachmentList(message.attachments),
 
               if (message.text.isNotEmpty)
-                Text(
+                SelectableText(
                   message.text,
                   textHeightBehavior: const TextHeightBehavior(
                     applyHeightToFirstAscent: false,
