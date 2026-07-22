@@ -1,7 +1,7 @@
 import "package:chattes/ui/chat/widgets/chat_top_bar.dart";
 import "package:chattes/ui/chat/widgets/input/chat_input.dart";
 import "package:chattes/ui/chat/widgets/messages/chat_messages.dart";
-import "package:chattes/ui/menu/providers/chats.dart";
+import "package:chattes/ui/menu/providers/selected_chat.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
@@ -29,8 +29,8 @@ class ChatScreen extends StatelessWidget {
           extendBodyBehindAppBar: true,
           appBar: ChatTopBar(),
           backgroundColor: theme.colorScheme.surfaceContainerLowest,
-          body: ChatMessageList(),
-          bottomNavigationBar: ChatInputBar(),
+          body: ChatMessageList(chatId: selectedChatId),
+          bottomNavigationBar: ChatInputBar(chatId: selectedChatId),
         );
       },
     );

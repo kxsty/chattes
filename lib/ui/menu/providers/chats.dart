@@ -1,49 +1,54 @@
 import "package:chattes/data/app/dto.dart";
 import "package:chattes/ui/core/rust_app.dart";
-import "package:riverpod_annotation/riverpod_annotation.dart";
+import "package:chattes/ui/menu/providers/selected_chat.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-part "chats.g.dart";
+final chatsProvider = AsyncNotifierProvider.autoDispose(ChatsNotifier.new);
 
-@riverpod
-class Chats extends _$Chats {
+class ChatsNotifier extends AsyncNotifier<List<Chat>> {
   @override
   Future<List<Chat>> build() async {
-    var chats = await Api().chats.list(
-      request: ListChats(limit: 1000, desc: true),
+    final value = await Api().chats.list(
+      request: const .new(limit: 1000, desc: true),
     );
-    chats.sort((a, b) => a.compareTo(b));
-    return chats;
+
+    value.sort((a, b) => a.compareTo(b));
+
+    return value;
   }
 
-  Future<void> add(PostChat post) async {
-    state = const AsyncLoading();
-    var chat = await Api().chats.post(request: post);
+  Future<void> add(final String name) async {
+    final chat = await Api().chats.post(request: .new(name: name));
 
-    var chats = [...state.value!, chat];
-    chats.sort((a, b) => a.compareTo(b));
+    final oldValue = state.value;
+    final value = oldValue?.toList() ?? [];
 
-    state = AsyncData(chats);
+    value.add(chat);
+    value.sort((a, b) => a.compareTo(b));
 
-    ref.read(selectedChatIdProvider.notifier).selectChat(chat);
+    state = AsyncData(value);
+
+    ref.read(selectedChatIdProvider.notifier).set(chat.id);
   }
-}
 
-@riverpod
-class SelectedChatId extends _$SelectedChatId {
-  @override
-  int? build() => null;
+  void setLastMessage(final int chatId, final Message? lastMessage) {
+    final oldValue = state.value;
+    if (oldValue == null) {
+      return;
+    }
 
-  void selectChat(Chat? chat) => state = chat?.id;
-}
+    final index = oldValue.indexWhere((c) => c.id == chatId);
+    if (index == -1) {
+      return;
+    }
 
-@riverpod
-Chat? selectedChat(Ref ref) {
-  final id = ref.watch(selectedChatIdProvider);
-  if (id == null) return null;
+    final value = oldValue.toList();
 
-  final chats = ref.watch(chatsProvider).value ?? [];
+    value[index] = value[index].copyWith(lastMessage: lastMessage);
+    value.sort((a, b) => a.compareTo(b));
 
-  return chats.firstWhere((chat) => chat.id == id);
+    state = AsyncData(value);
+  }
 }
 
 extension ChatCopyWith on Chat {
@@ -56,7 +61,7 @@ extension ChatCopyWith on Chat {
   }
 }
 
-extension ChatCompare on Chat {
+extension ChatCompareTo on Chat {
   int compareTo(Chat other) {
     final sentAt = lastMessage?.sentAt;
     final otherSentAt = other.lastMessage?.sentAt;

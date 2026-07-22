@@ -1,5 +1,5 @@
 import "package:chattes/ui/chat/widgets/chat_screen.dart";
-import "package:chattes/ui/menu/providers/chats.dart";
+import "package:chattes/ui/menu/providers/selected_chat.dart";
 import "package:chattes/ui/menu/widgets/menu_divider.dart";
 import "package:chattes/ui/menu/widgets/menu_screen.dart";
 import "package:flutter/material.dart";
@@ -41,7 +41,7 @@ class _WidgetTreeState extends State<WidgetTree> {
                     MaterialPage(child: ChatScreen()),
                 ],
                 onDidRemovePage: (_) =>
-                    ref.read(selectedChatIdProvider.notifier).selectChat(null),
+                    ref.read(selectedChatIdProvider.notifier).set(null),
               );
             },
           );

@@ -1,40 +1,35 @@
 import "package:chattes/data/app/dto.dart";
+import "package:chattes/ui/chat/providers/draft.dart";
 import "package:chattes/ui/chat/widgets/attachments/attachment_list.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:path/path.dart" as path;
 
-class ChatInputAttachments extends StatefulWidget {
-  const ChatInputAttachments(this.attachments, {super.key});
+class ChatInputAttachments extends ConsumerWidget {
+  const ChatInputAttachments({required this.chatId, super.key});
 
-  final List<PostAttachment> attachments;
+  final int chatId;
 
   @override
-  State<ChatInputAttachments> createState() => _ChatInputAttachmentsState();
-}
-
-class _ChatInputAttachmentsState extends State<ChatInputAttachments> {
-  @override
-  Widget build(BuildContext context) {
-    if (widget.attachments.isEmpty) {
-      return Container();
+  Widget build(BuildContext context, WidgetRef ref) {
+    var attachments = ref.watch(draftProvider(chatId)).attachments;
+    if (attachments == null || attachments.isEmpty) {
+      return const SizedBox.shrink();
     }
 
     return Container(
       width: .infinity,
       padding: const .all(8),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 200),
+        constraints: const BoxConstraints(maxHeight: 256 + 8),
         child: SingleChildScrollView(
           child: AttachmentList(
-            widget.attachments
-                .map(
-                  (a) =>
-                      Attachment(path: a.path, fileName: path.basename(a.path)),
-                )
+            attachments
+                .map((p) => Attachment(path: p, fileName: path.basename(p)))
                 .toList(),
-            onDelete: (index) => setState(() {
-              widget.attachments.removeAt(index);
-            }),
+            onDelete: ref
+                .read(draftAttachmentsProvider(chatId).notifier)
+                .removeAt,
           ),
         ),
       ),

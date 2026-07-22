@@ -5,89 +5,63 @@ import "package:chattes/ui/core/rust_app.dart";
 import "package:chattes/ui/menu/providers/chats.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-final messagesProvider =
-    AsyncNotifierProvider.autoDispose<Messages, MessagesState?>(Messages.new);
+final messagesProvider = AsyncNotifierProvider.autoDispose.family(
+  MessagesNotifier.new,
+);
 
-class Messages extends AsyncNotifier<MessagesState?> {
+class MessagesNotifier extends AsyncNotifier<MessagesState?> {
+  MessagesNotifier(this.chatId);
+
+  final int chatId;
+
   @override
   Future<MessagesState?> build() async {
-    final chatId = ref.watch(selectedChatIdProvider);
-    if (chatId == null) {
-      return null;
-    }
-
-    var request = ListMessages(
-      chatId: chatId,
-      id: null,
-      limit: 100,
-      desc: false,
+    final response = await Api().messages.list(
+      request: .new(chatId: chatId, id: null, limit: 100, desc: false),
     );
-
-    final response = await Api().messages.list(request: request);
 
     return MessagesState(
       messages: response,
-      hasMorePrev: response.length >= request.limit,
+      hasMorePrev: response.length >= 100,
     );
   }
 
-  Future<void> add(String text, List<PostAttachment> attachments) async {
-    final chatId = ref.watch(selectedChatIdProvider);
-    if (chatId == null) {
-      return;
-    }
-
-    final current = state.value!;
-
-    final newMessage = await Api().messages.post(
-      request: PostMessage(
+  Future<void> add(String text, List<String> attachments) async {
+    final message = await Api().messages.post(
+      request: .new(
         chatId: chatId,
         text: text,
-        attachments: attachments,
+        attachments: attachments.map((p) => PostAttachment(path: p)).toList(),
       ),
     );
 
-    state = AsyncData(
-      current.copyWith(messages: [...current.messages, newMessage]),
-    );
+    final oldValue = state.value;
+    final value = oldValue?.copyWith() ?? .new();
 
-    final chatsNotifier = ref.read(chatsProvider.notifier);
-    final chats = ref.read(chatsProvider).value;
+    value.messages.add(message);
 
-    if (chats != null) {
-      final updatedChats = chats
-          .map(
-            (chat) => chat.id == chatId
-                ? chat.copyWith(lastMessage: newMessage)
-                : chat,
-          )
-          .toList();
-      updatedChats.sort((a, b) => a.compareTo(b));
+    state = AsyncData(value);
 
-      chatsNotifier.state = AsyncData(updatedChats);
-    }
+    ref.read(chatsProvider.notifier).setLastMessage(chatId, message);
   }
 
-  Future<void> remove(int id) async {
-    final chatId = ref.watch(selectedChatIdProvider);
-    if (chatId == null) {
+  Future<void> removeAt(int index) async {
+    final oldValue = state.value;
+    if (oldValue == null) {
       return;
     }
+    final value = oldValue.copyWith();
 
-    final current = state.value!;
+    final message = value.messages.removeAt(index);
 
     var deleted = await Api().messages.delete(
-      request: DeleteMessage(chatId: chatId, id: id),
+      request: .new(chatId: chatId, id: message.id),
     );
     if (!deleted) {
       return;
     }
 
-    state = AsyncData(
-      current.copyWith(
-        messages: current.messages.where((m) => m.id != id).toList(),
-      ),
-    );
+    state = AsyncData(value);
   }
 }
 

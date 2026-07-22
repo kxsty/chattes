@@ -1,6 +1,6 @@
 import "package:chattes/data/app/dto.dart";
 import "package:chattes/ui/core/extensions.dart";
-import "package:chattes/ui/menu/providers/chats.dart";
+import "package:chattes/ui/menu/providers/selected_chat.dart";
 import "package:chattes/ui/menu/widgets/chats/letter_avatar.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -20,8 +20,7 @@ class ChatTile extends StatelessWidget {
         final isSelected = selectedChatId == chat.id;
 
         return ListTile(
-          onTap: () =>
-              ref.read(selectedChatIdProvider.notifier).selectChat(chat),
+          onTap: () => ref.read(selectedChatIdProvider.notifier).set(chat.id),
           selected: isSelected,
           contentPadding: const .symmetric(horizontal: 8),
           leading: LetterAvatar(title: chat.name),

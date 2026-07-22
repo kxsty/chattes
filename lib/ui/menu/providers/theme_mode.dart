@@ -1,10 +1,9 @@
 import "package:flutter/material.dart";
-import "package:riverpod_annotation/riverpod_annotation.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-part "theme_mode.g.dart";
+final themeModeProvider = NotifierProvider.autoDispose(ThemeModeNotifier.new);
 
-@riverpod
-class ThemeModeNotifier extends _$ThemeModeNotifier {
+class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
   ThemeMode build() => .system;
 

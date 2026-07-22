@@ -1,6 +1,5 @@
 import "dart:io";
 
-import "package:chattes/data/app/dto.dart";
 import "package:chattes/ui/menu/providers/chats.dart";
 import "package:file_picker/file_picker.dart";
 import "package:flutter/material.dart";
@@ -98,9 +97,9 @@ class _CreateChatWidgetState extends State<CreateChatWidget> {
                       return;
                     }
 
-                    final post = PostChat(name: _nameController.text.trim());
+                    final name = _nameController.text.trim();
 
-                    ref.read(chatsProvider.notifier).add(post);
+                    ref.read(chatsProvider.notifier).add(name);
 
                     /*                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Created chat: ${post.name}')),
