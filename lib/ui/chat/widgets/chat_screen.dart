@@ -5,14 +5,9 @@ import "package:chattes/ui/menu/providers/chats.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
-  @override
-  State<ChatScreen> createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -31,13 +26,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
         return Scaffold(
           extendBody: true,
+          extendBodyBehindAppBar: true,
+          appBar: ChatTopBar(),
           backgroundColor: theme.colorScheme.surfaceContainerLowest,
-          body: Stack(
-            children: [
-              ChatMessageList(),
-              Positioned(top: 0, left: 0, right: 0, child: ChatTopBar()),
-            ],
-          ),
+          body: ChatMessageList(),
           bottomNavigationBar: ChatInputBar(),
         );
       },
