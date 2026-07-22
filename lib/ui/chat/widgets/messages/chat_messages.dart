@@ -3,16 +3,11 @@ import "package:chattes/ui/chat/widgets/messages/message.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-class ChatMessageList extends StatefulWidget {
+class ChatMessageList extends StatelessWidget {
   const ChatMessageList({super.key, required this.chatId});
 
   final int chatId;
 
-  @override
-  State<ChatMessageList> createState() => _ChatMessageListState();
-}
-
-class _ChatMessageListState extends State<ChatMessageList> {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom - 8;
@@ -22,7 +17,7 @@ class _ChatMessageListState extends State<ChatMessageList> {
       child: Consumer(
         builder: (context, ref, child) {
           final messages =
-              ref.watch(messagesProvider(widget.chatId)).value?.messages ?? [];
+              ref.watch(messagesProvider(chatId)).value?.messages ?? [];
 
           return ListView.builder(
             reverse: true,
@@ -30,9 +25,8 @@ class _ChatMessageListState extends State<ChatMessageList> {
             itemCount: messages.length,
             itemBuilder: (context, index) => MessageWidget(
               message: messages.elementAt(messages.length - 1 - index),
-              onDelete: () => ref
-                  .read(messagesProvider(widget.chatId).notifier)
-                  .removeAt(index),
+              onDelete: () =>
+                  ref.read(messagesProvider(chatId).notifier).removeAt(index),
             ),
           );
         },
