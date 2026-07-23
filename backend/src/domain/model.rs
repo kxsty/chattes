@@ -23,12 +23,15 @@ pub struct ChatModel {
 }
 impl Ord for ChatModel {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.last_message.cmp(&other.last_message)
+        self.last_message
+            .cmp(&other.last_message)
+            .then(self.id.cmp(&other.id))
     }
 }
+
 impl PartialOrd for ChatModel {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.last_message.partial_cmp(&other.last_message)
+        Some(self.cmp(other))
     }
 }
 impl Eq for ChatModel {}
