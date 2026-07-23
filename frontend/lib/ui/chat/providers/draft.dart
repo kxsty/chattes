@@ -1,5 +1,6 @@
 import "dart:async";
 
+import "package:chattes/domain/models/message_body.dart";
 import "package:chattes/ui/chat/providers/messages.dart";
 import "package:chattes/ui/core/debouncer.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -15,26 +16,28 @@ final draftAttachmentsProvider = AsyncNotifierProvider.autoDispose.family(
   DraftAttachmentsNotifier.new,
 );
 
-class DraftNotifier extends Notifier<DraftState> {
+class DraftNotifier extends Notifier<MessageBody> {
   DraftNotifier(this.chatId);
 
   final int chatId;
 
   @override
-  DraftState build() {
+  MessageBody build() {
     final text = ref.watch(draftTextProvider(chatId)).value ?? "";
     final attachments =
         ref.watch(draftAttachmentsProvider(chatId)).value ?? const [];
 
-    return DraftState(text: text, attachments: attachments);
+    return .new(text: text, attachments: attachments);
   }
 
   Future<bool> send() async {
     final value = state;
 
-    final added = await ref
-        .read(messagesProvider(chatId).notifier)
-        .add(value.text, value.attachments);
+    if (value.isEmpty) {
+      return false;
+    }
+
+    final added = await ref.read(messagesProvider(chatId).notifier).add(value);
     if (!added) {
       return false;
     }
@@ -148,11 +151,4 @@ class DraftAttachmentsNotifier extends AsyncNotifier<List<String>> {
 
     state = AsyncData(const []);
   }
-}
-
-class DraftState {
-  const DraftState({this.text = "", this.attachments = const []});
-
-  final String text;
-  final List<String> attachments;
 }
