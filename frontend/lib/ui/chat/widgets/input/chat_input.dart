@@ -11,6 +11,7 @@ class ChatInputBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final mediaQuery = MediaQuery.of(context);
 
     return SafeArea(
       top: false,
@@ -21,16 +22,21 @@ class ChatInputBar extends StatelessWidget {
           color: theme.colorScheme.surfaceContainerLow,
           border: .all(color: theme.colorScheme.outlineVariant),
         ),
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            ChatInputAttachments(chatId: chatId),
+        child: ConstrainedBox(
+          constraints: .new(maxHeight: mediaQuery.size.height * 0.75),
+          child: Column(
+            mainAxisSize: .min,
+            children: [
+              Flexible(child: ChatInputAttachments(chatId: chatId)),
 
-            ChatInputCore(
-              key: ValueKey("chat:$chatId:input:core"),
-              chatId: chatId,
-            ),
-          ],
+              Flexible(
+                child: ChatInputCore(
+                  key: ValueKey("chat:$chatId:input:core"),
+                  chatId: chatId,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
