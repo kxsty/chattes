@@ -14,20 +14,14 @@ class ChatInputCore extends ConsumerStatefulWidget {
 }
 
 class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
-  late final TextEditingController _controller;
+  final TextEditingController _controller = .new();
   final FocusNode _focusNode = .new();
 
   @override
-  void initState() {
-    super.initState();
-
-    final text = ref.watch(draftTextProvider(widget.chatId)).value;
-
-    _controller = TextEditingController(text: text);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final text = ref.watch(draftTextProvider(widget.chatId)).value;
+    _controller.text = text ?? _controller.text;
+
     return Row(
       crossAxisAlignment: .end,
       children: [
