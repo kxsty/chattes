@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:chattes/data/app/dto.dart";
+import "package:chattes/domain/models/message_body.dart";
 import "package:chattes/ui/core/rust_app.dart";
 import "package:chattes/ui/menu/providers/chats.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -17,7 +18,7 @@ class MessagesNotifier extends AsyncNotifier<MessagesState?> {
   @override
   Future<MessagesState?> build() async {
     final response = await Api().messages.list(
-      request: .new(chatId: chatId, idCursor: null, limit: 100, desc: false),
+      request: .new(chatId: chatId, limit: 100, desc: false),
     );
 
     return MessagesState(
@@ -26,16 +27,18 @@ class MessagesNotifier extends AsyncNotifier<MessagesState?> {
     );
   }
 
-  Future<bool> add(String text, List<String> attachments) async {
-    if (text.trim().isEmpty && attachments.isEmpty) {
+  Future<bool> add(MessageBody body) async {
+    if (body.isEmpty) {
       return false;
     }
 
     final message = await Api().messages.post(
       request: .new(
         chatId: chatId,
-        text: text,
-        attachments: attachments.map((p) => PostAttachment(path: p)).toList(),
+        text: body.text,
+        attachments: body.attachments
+            .map((p) => PostAttachment(path: p))
+            .toList(),
       ),
     );
 
