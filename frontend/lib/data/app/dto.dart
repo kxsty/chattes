@@ -34,6 +34,25 @@ class Chat {
 
   const Chat({required this.id, required this.name, this.lastMessage});
 
+  int compareTo(Chat other) {
+    if (lastMessage == null && other.lastMessage == null) {
+      return 0;
+    }
+    if (lastMessage == null) {
+      return -1;
+    }
+    if (other.lastMessage == null) {
+      return 1;
+    }
+
+    final lastMessageCmp = lastMessage!.compareTo(other.lastMessage!);
+    if (lastMessageCmp != 0) {
+      return lastMessageCmp;
+    }
+
+    return id.compareTo(other.id);
+  }
+
   @override
   int get hashCode => id.hashCode ^ name.hashCode ^ lastMessage.hashCode;
 
@@ -176,6 +195,10 @@ class Message {
     required this.text,
     required this.attachments,
   });
+
+  int compareTo(Message other) {
+    return id.compareTo(other.id);
+  }
 
   @override
   int get hashCode =>

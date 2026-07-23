@@ -4,6 +4,26 @@ use domain::model;
 use flutter_rust_bridge::frb;
 
 #[frb(type_64bit_int)]
+#[frb(dart_code = "
+    int compareTo(Chat other) {
+        if (lastMessage == null && other.lastMessage == null) {
+            return 0;
+        }
+        if (lastMessage == null) {
+            return -1;
+        }
+        if (other.lastMessage == null) {
+            return 1;
+        }
+
+        final lastMessageCmp = lastMessage!.compareTo(other.lastMessage!);
+        if (lastMessageCmp != 0) {
+            return lastMessageCmp;
+        }
+
+        return id.compareTo(other.id);
+    }
+")]
 pub struct Chat {
     pub id: u64,
     pub name: String,
@@ -47,6 +67,11 @@ pub struct DeleteChat {
 }
 
 #[frb(type_64bit_int)]
+#[frb(dart_code = "
+    int compareTo(Message other) {
+        return id.compareTo(other.id);
+    }
+")]
 pub struct Message {
     pub id: u64,
     pub sent_at: DateTime<Utc>,

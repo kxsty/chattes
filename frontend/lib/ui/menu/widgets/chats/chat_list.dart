@@ -15,7 +15,8 @@ class ChatList extends ConsumerWidget {
     return ListView.builder(
       padding: bottomPadding != null ? .only(bottom: bottomPadding!) : null,
       itemCount: chats.length,
-      itemBuilder: (context, index) => ChatTile(chat: chats[index]),
+      itemBuilder: (context, index) =>
+          ChatTile(chat: chats[chats.length - 1 - index]),
     );
   }
 }

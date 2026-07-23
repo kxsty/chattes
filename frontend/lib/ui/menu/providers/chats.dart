@@ -9,10 +9,8 @@ class ChatsNotifier extends AsyncNotifier<List<Chat>> {
   @override
   Future<List<Chat>> build() async {
     final value = await Api().chats.list(
-      request: const .new(limit: 1000, desc: true),
+      request: const .new(limit: 1000, desc: false),
     );
-
-    value.sort((a, b) => a.compareTo(b));
 
     return value;
   }
@@ -58,24 +56,5 @@ extension ChatCopyWith on Chat {
       name: name ?? this.name,
       lastMessage: lastMessage ?? this.lastMessage,
     );
-  }
-}
-
-extension ChatCompareTo on Chat {
-  int compareTo(Chat other) {
-    final sentAt = lastMessage?.sentAt;
-    final otherSentAt = other.lastMessage?.sentAt;
-
-    if (sentAt == null && otherSentAt == null) return 0;
-
-    if (sentAt == null) {
-      return -1;
-    }
-
-    if (otherSentAt == null) {
-      return 1;
-    }
-
-    return sentAt.compareTo(otherSentAt);
   }
 }
