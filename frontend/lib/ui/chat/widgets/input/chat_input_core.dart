@@ -1,6 +1,5 @@
 import "package:chattes/ui/chat/providers/draft.dart";
 import "package:chattes/ui/core/constants.dart";
-import "package:chattes/ui/core/debouncer.dart";
 import "package:file_picker/file_picker.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -16,7 +15,6 @@ class ChatInputCore extends ConsumerStatefulWidget {
 
 class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
   late TextEditingController _controller;
-  final Debouncer _debouncer = .new(milliseconds: 300);
 
   @override
   void initState() {
@@ -30,7 +28,6 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
   @override
   Future<void> dispose() async {
     _controller.dispose();
-    _debouncer.dispose();
     super.dispose();
   }
 
@@ -50,10 +47,8 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
             maxLines: 20,
             controller: _controller,
             onSubmitted: (_) => _submit(ref),
-            onChanged: (text) => _debouncer.run(
-              () =>
-                  ref.read(draftTextProvider(widget.chatId).notifier).set(text),
-            ),
+            onChanged: (text) =>
+                ref.read(draftTextProvider(widget.chatId).notifier).set(text),
             textInputAction: .send,
             decoration: const InputDecoration(
               isCollapsed: true,
@@ -94,7 +89,6 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
       return;
     }
 
-    _debouncer.cancel();
     await ref
         .read(draftTextProvider(widget.chatId).notifier)
         .set(_controller.text);
