@@ -57,7 +57,11 @@ class DraftTextNotifier extends AsyncNotifier<String> {
   }
 
   Future<void> set(String text) async {
-    final value = text;
+    final oldValue = state.value;
+    final value = text.trim();
+    if (value == oldValue) {
+      return;
+    }
 
     _saveDebouncer.run(() async {
       final instance = await SharedPreferences.getInstance();
