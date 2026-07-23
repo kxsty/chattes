@@ -42,6 +42,8 @@ dependencies:
   riverpod_annotation: ^4.0.3
   dynamic_color: ^1.8.1
   path: ^1.9.1
+  rust_lib_chattes:
+    path: rust_builder
 
 dev_dependencies:
   flutter_test:

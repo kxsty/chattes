@@ -14,7 +14,7 @@ class ChatInputAttachments extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var attachments = ref.watch(draftProvider(chatId)).attachments;
-    if (attachments == null || attachments.isEmpty) {
+    if (attachments.isEmpty) {
       return const SizedBox.shrink();
     }
 
