@@ -15,6 +15,7 @@ class AttachmentEntry extends StatelessWidget {
     final theme = Theme.of(context);
 
     return InputChip(
+      clipBehavior: .antiAlias,
       shape: RoundedRectangleBorder(borderRadius: kPillBorderRadius),
       avatar: _attachmentToIcon(attachment),
       label: Text(attachment.fileName, style: theme.textTheme.bodySmall),
