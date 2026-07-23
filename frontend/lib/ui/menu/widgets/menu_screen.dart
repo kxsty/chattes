@@ -14,9 +14,9 @@ class MenuScreen extends StatelessWidget {
         MaterialPage(
           child: Scaffold(
             backgroundColor: theme.colorScheme.surfaceContainerLow,
-            body: ChatList(),
-            floatingActionButtonLocation: .centerDocked,
-            floatingActionButton: MenuBottomBar(),
+            body: ChatList(bottomPadding: kToolbarHeight),
+            extendBody: true,
+            bottomNavigationBar: MenuBottomBar(),
           ),
         ),
       ],
