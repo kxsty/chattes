@@ -1,4 +1,6 @@
 import "package:chattes/data/app/dto.dart";
+import "package:chattes/domain/models/message_body.dart";
+import "package:chattes/ui/chat/providers/draft.dart";
 import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/core/extensions.dart";
 import "package:chattes/ui/menu/providers/selected_chat.dart";
@@ -20,7 +22,12 @@ class ChatTile extends StatelessWidget {
         final selectedChatId = ref.watch(selectedChatIdProvider);
         final isSelected = selectedChatId == chat.id;
 
-        final message = chat.lastMessage;
+        final draft = ref.watch(draftProvider(chat.id));
+        final MessageBody previewMessage = draft.isEmpty
+            ? chat.lastMessage != null
+                  ? .from(chat.lastMessage!)
+                  : .new()
+            : draft;
 
         return ListTile(
           onTap: () => ref.read(selectedChatIdProvider.notifier).set(chat.id),
@@ -44,14 +51,17 @@ class ChatTile extends StatelessWidget {
                 ),
               ),
 
-              if (message != null)
+              if (chat.lastMessage != null)
                 Text(
-                  message.sentAt.formatDateTime,
+                  chat.lastMessage!.sentAt.formatDateTime,
                   style: theme.textTheme.bodySmall,
                 ),
             ],
           ),
-          subtitle: MessagePreview(message),
+          subtitle: MessagePreview(
+            previewMessage,
+            isDraft: previewMessage == draft,
+          ),
         );
       },
     );
@@ -59,9 +69,10 @@ class ChatTile extends StatelessWidget {
 }
 
 class MessagePreview extends StatelessWidget {
-  const MessagePreview(this.message, {super.key});
+  const MessagePreview(this.message, {super.key, this.isDraft = false});
 
-  final Message? message;
+  final MessageBody message;
+  final bool isDraft;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +82,7 @@ class MessagePreview extends StatelessWidget {
         (theme.textTheme.bodyMedium?.fontSize ?? 1) *
         (theme.textTheme.bodyMedium?.height ?? 1);
 
-    if (message == null) {
+    if (message.isEmpty) {
       return SizedBox(height: height);
     }
 
@@ -82,12 +93,14 @@ class MessagePreview extends StatelessWidget {
         textBaseline: .alphabetic,
         spacing: 4,
         children: [
-          if (message!.attachments.isNotEmpty)
-            MessagePreviewAttachments(count: message!.attachments.length),
-          if (message!.text.isNotEmpty)
+          if (isDraft)
+            Text("Draft: ", style: .new(color: theme.colorScheme.primary)),
+          if (message.attachments.isNotEmpty)
+            MessagePreviewAttachments(count: message.attachments.length),
+          if (message.text.isNotEmpty)
             Expanded(
               child: Text(
-                message!.text,
+                message.text,
                 maxLines: 1,
                 overflow: .ellipsis,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -126,7 +139,7 @@ class MessagePreviewAttachments extends StatelessWidget {
           Icon(
             Icons.attachment_rounded,
             size: theme.textTheme.bodySmall?.fontSize,
-            color: theme.colorScheme.primary,
+            color: theme.colorScheme.onSurface,
           ),
         ],
       ),
