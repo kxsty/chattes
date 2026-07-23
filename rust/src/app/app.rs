@@ -10,7 +10,6 @@ use std::sync::Arc;
 pub struct App {
     pub chats: Chats,
     pub messages: Messages,
-    // pub attachments: Attachments,
 }
 
 impl App {
@@ -32,13 +31,8 @@ impl App {
 
         let chats = Chats::new(chat_store.clone());
         let messages = Messages::new(chat_store.clone(), msg_store.clone(), att_store.clone());
-        // let attachments = Attachments::new(chat_store, msg_store, att_store);
 
-        Self {
-            chats,
-            messages,
-            // attachments,
-        }
+        Self { chats, messages }
     }
 }
 

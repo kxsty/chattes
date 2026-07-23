@@ -14,11 +14,6 @@ impl From<&str> for ValidationError {
         Self(value.to_owned())
     }
 }
-/*impl From<ulid::DecodeError> for ValidationError {
-    fn from(value: ulid::DecodeError) -> Self {
-        Self(value.to_string())
-    }
-}*/
 impl From<ParseIntError> for ValidationError {
     fn from(value: ParseIntError) -> Self {
         Self(value.to_string())

@@ -1037,12 +1037,12 @@ impl SseDecode for crate::app::dto::ListMessages {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_chatId = <u64>::sse_decode(deserializer);
-        let mut var_id = <Option<u64>>::sse_decode(deserializer);
+        let mut var_idCursor = <Option<u64>>::sse_decode(deserializer);
         let mut var_limit = <u32>::sse_decode(deserializer);
         let mut var_desc = <bool>::sse_decode(deserializer);
         return crate::app::dto::ListMessages {
             chat_id: var_chatId,
-            id: var_id,
+            id_cursor: var_idCursor,
             limit: var_limit,
             desc: var_desc,
         };
@@ -1442,7 +1442,7 @@ impl flutter_rust_bridge::IntoDart for crate::app::dto::ListMessages {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.chat_id.into_into_dart().into_dart(),
-            self.id.into_into_dart().into_dart(),
+            self.id_cursor.into_into_dart().into_dart(),
             self.limit.into_into_dart().into_dart(),
             self.desc.into_into_dart().into_dart(),
         ]
@@ -1740,7 +1740,7 @@ impl SseEncode for crate::app::dto::ListMessages {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u64>::sse_encode(self.chat_id, serializer);
-        <Option<u64>>::sse_encode(self.id, serializer);
+        <Option<u64>>::sse_encode(self.id_cursor, serializer);
         <u32>::sse_encode(self.limit, serializer);
         <bool>::sse_encode(self.desc, serializer);
     }

@@ -39,7 +39,7 @@ impl Messages {
             return Err(Validation("Chat not found".into()));
         }
 
-        let id = request.id.map(Id::from_raw);
+        let id = request.id_cursor.map(Id::from_raw);
 
         let messages = self
             .msg_store
@@ -71,7 +71,6 @@ impl Messages {
             return Err(Validation("Chat not found".into()));
         }
 
-        // let now = SystemTime::now();
         let sent_at = Timestamp::new(Utc::now());
 
         let mut attachemnts = Vec::with_capacity(request.attachments.len());

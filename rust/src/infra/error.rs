@@ -26,12 +26,6 @@ impl From<yaml_serde::Error> for Error {
         Self::Serialization(value.to_string().into())
     }
 }
-
-/*impl From<ulid::DecodeError> for Error {
-    fn from(value: ulid::DecodeError) -> Self {
-        Self::Serialization(value.to_string())
-    }
-}*/
 impl error::Error for Error {}
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

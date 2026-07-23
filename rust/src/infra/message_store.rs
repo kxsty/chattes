@@ -134,42 +134,6 @@ impl MessageStore {
         Ok(Some(message))
     }
 
-    /*     pub fn exists(&self, chat_id: &Id, id: &Id) -> Result<bool> {
-        let path = self.messages_fpath(&chat_id, &id);
-
-        let messages: Vec<MessageModel> = deserialize_from_file(&path)?.unwrap_or_default();
-
-        Ok(messages.binary_search_by(|m| m.id.cmp(&id)).is_ok())
-    }
-
-    pub fn attachments_remove(
-        &self,
-        chat_id: &Id,
-        message_id: &Id,
-        id: Id,
-    ) -> Result<Option<AttachmentModel>> {
-        let path = self.messages_fpath(&chat_id, &message_id);
-
-        let _guard = self.mutex.lock();
-
-        let mut messages: Vec<MessageModel> = deserialize_from_file(&path)?.unwrap_or_default();
-        let message_index = messages
-            .binary_search_by(|m| m.id.cmp(&message_id))
-            .map_err(|_| NotFound("Message not found".into()))?;
-
-        let attachments = &mut messages[message_index].attachments;
-
-        let Some(index) = attachments.iter().position(|a| a.id == id) else {
-            return Ok(None);
-        };
-
-        let attachment = attachments.remove(index);
-
-        serialize_to_file(&path, &messages)?;
-
-        Ok(Some(attachment))
-    } */
-
     fn select_asc(
         &self,
         chat_id: &Id,
@@ -196,7 +160,6 @@ impl MessageStore {
             let year = year?;
             years.push(year);
         }
-        debug_assert!(years.is_sorted());
         years.sort_unstable();
 
         for year in years.into_iter() {
@@ -210,7 +173,6 @@ impl MessageStore {
                 let month = month?;
                 months.push(month);
             }
-            debug_assert!(months.is_sorted());
             months.sort_unstable();
 
             for month in months.iter() {
@@ -224,7 +186,6 @@ impl MessageStore {
                     let day = day?;
                     days.push(day);
                 }
-                debug_assert!(days.is_sorted());
                 days.sort_unstable();
 
                 for day in days.iter() {
@@ -291,7 +252,6 @@ impl MessageStore {
             let year = year?;
             years.push(year);
         }
-        debug_assert!(years.is_sorted());
         years.sort_unstable_by_key(|&y| Reverse(y));
 
         for year in years.into_iter() {
@@ -305,7 +265,6 @@ impl MessageStore {
                 let month = month?;
                 months.push(month);
             }
-            debug_assert!(months.is_sorted());
             months.sort_unstable_by_key(|&m| Reverse(m));
 
             for month in months.iter() {
@@ -319,7 +278,6 @@ impl MessageStore {
                     let day = day?;
                     days.push(day);
                 }
-                debug_assert!(days.is_sorted());
                 days.sort_unstable_by_key(|&d| Reverse(d));
 
                 for day in days.iter() {
@@ -400,79 +358,3 @@ impl MessageStore {
         format!("{}-{}-{}.yaml", year, month, day)
     }
 }
-
-/*let ordering = if reverse {
-    Ordering::Greater
-} else {
-    Ordering::Less
-};
-
-let mut years;
-if reverse {
-    years.reverse();
-}
-
-for year in years
-    .into_iter()
-    .filter(|y| y.cmp(&sent_at.year()) != ordering)
-{
-    path.push(year.to_string());
-
-    let mut months;
-    if reverse {
-        months.reverse();
-    }
-
-    for month in months
-        .into_iter()
-        .filter(|m| year == sent_at.year() || m.cmp(&sent_at.month()) != ordering)
-    {
-        path.push(month.to_string());
-
-        let start_day = if year == sent_at.year() && month == sent_at.month() {
-            sent_at.day()
-        } else if reverse {
-            Day::max(year, month)
-        } else {
-            Day::MIN
-        };
-
-        let mut days =
-            DirEntryNames::<Day>::new(&path)?.collect::<result::Result<Vec<_>, _>>()?;
-        days.sort_unstable();
-        if reverse {
-            days.reverse();
-        }
-
-        for day in days.into_iter().filter(|d| {
-            year == sent_at.year() && month == sent_at.month()
-                || d.cmp(&start_day) != ordering
-        }) {
-            path.push(day.to_string());
-            path.push(Self::messages_file_name(year, month, day));
-
-            let messages: Vec<Message> = deserialize_from_file(&path)?.unwrap_or_default();
-            debug_assert!(messages.is_sorted());
-
-            for message in messages {
-                if message.id.cmp(&id) == ordering {
-                    continue;
-                }
-
-                result.push(message);
-                if result.len() >= take {
-                    return Ok(result);
-                }
-            }
-
-            path.pop(); // Pop INNER_PATH
-            path.pop(); // Pop day
-        }
-
-        path.pop(); // Pop month
-    }
-
-    path.pop(); // Pop year
-}
-
-Ok(result)*/

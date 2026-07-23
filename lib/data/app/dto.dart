@@ -138,20 +138,20 @@ class ListChats {
 
 class ListMessages {
   final int chatId;
-  final int? id;
+  final int? idCursor;
   final int limit;
   final bool desc;
 
   const ListMessages({
     required this.chatId,
-    this.id,
+    this.idCursor,
     required this.limit,
     required this.desc,
   });
 
   @override
   int get hashCode =>
-      chatId.hashCode ^ id.hashCode ^ limit.hashCode ^ desc.hashCode;
+      chatId.hashCode ^ idCursor.hashCode ^ limit.hashCode ^ desc.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -159,7 +159,7 @@ class ListMessages {
       other is ListMessages &&
           runtimeType == other.runtimeType &&
           chatId == other.chatId &&
-          id == other.id &&
+          idCursor == other.idCursor &&
           limit == other.limit &&
           desc == other.desc;
 }

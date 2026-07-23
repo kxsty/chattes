@@ -1039,7 +1039,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       throw Exception("unexpected arr length: expect 4 but see ${arr.length}");
     return ListMessages(
       chatId: dco_decode_CastedPrimitive_u_64(arr[0]),
-      id: dco_decode_opt_CastedPrimitive_u_64(arr[1]),
+      idCursor: dco_decode_opt_CastedPrimitive_u_64(arr[1]),
       limit: dco_decode_u_32(arr[2]),
       desc: dco_decode_bool(arr[3]),
     );
@@ -1523,12 +1523,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ListMessages sse_decode_list_messages(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_chatId = sse_decode_CastedPrimitive_u_64(deserializer);
-    var var_id = sse_decode_opt_CastedPrimitive_u_64(deserializer);
+    var var_idCursor = sse_decode_opt_CastedPrimitive_u_64(deserializer);
     var var_limit = sse_decode_u_32(deserializer);
     var var_desc = sse_decode_bool(deserializer);
     return ListMessages(
       chatId: var_chatId,
-      id: var_id,
+      idCursor: var_idCursor,
       limit: var_limit,
       desc: var_desc,
     );
@@ -2047,7 +2047,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_list_messages(ListMessages self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_CastedPrimitive_u_64(self.chatId, serializer);
-    sse_encode_opt_CastedPrimitive_u_64(self.id, serializer);
+    sse_encode_opt_CastedPrimitive_u_64(self.idCursor, serializer);
     sse_encode_u_32(self.limit, serializer);
     sse_encode_bool(self.desc, serializer);
   }

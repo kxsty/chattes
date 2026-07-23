@@ -17,7 +17,7 @@ class MessagesNotifier extends AsyncNotifier<MessagesState?> {
   @override
   Future<MessagesState?> build() async {
     final response = await Api().messages.list(
-      request: .new(chatId: chatId, id: null, limit: 100, desc: false),
+      request: .new(chatId: chatId, idCursor: null, limit: 100, desc: false),
     );
 
     return MessagesState(

@@ -71,7 +71,7 @@ impl From<model::MessageModel> for Message {
 #[frb(type_64bit_int)]
 pub struct ListMessages {
     pub chat_id: u64,
-    pub id: Option<u64>,
+    pub id_cursor: Option<u64>,
     pub limit: u32,
     pub desc: bool,
 }

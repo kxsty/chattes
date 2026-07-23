@@ -1,10 +1,9 @@
 use ferroid::generator::AtomicSnowflakeGenerator;
 use ferroid::id::SnowflakeDiscordId;
-use ferroid::time::{DISCORD_EPOCH, MonotonicClock};
+use ferroid::time::{MonotonicClock, DISCORD_EPOCH};
 use std::sync::LazyLock;
 
 pub mod app;
-pub mod attachments;
 pub mod chats;
 pub mod dto;
 mod error;
