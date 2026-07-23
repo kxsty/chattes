@@ -46,9 +46,8 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
             minLines: 1,
             maxLines: 20,
             controller: _controller,
-            onSubmitted: (_) => _submit(ref),
-            onChanged: (text) =>
-                ref.read(draftTextProvider(widget.chatId).notifier).set(text),
+            onSubmitted: (_) => _submit(),
+            onChanged: (text) => _setText(text),
             textInputAction: .send,
             decoration: const InputDecoration(
               isCollapsed: true,
@@ -63,11 +62,27 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
         ),
         IconButton(
           icon: const Icon(Icons.send_rounded),
-          onPressed: () => _submit(ref),
+          onPressed: _anyInput() ? () => _submit() : null,
           constraints: const .expand(height: 38, width: 38),
         ),
       ],
     );
+  }
+
+  bool _anyInput() {
+    final text = ref.watch(draftTextProvider(widget.chatId)).value;
+    if (text != null && text.isNotEmpty) {
+      return true;
+    }
+
+    final attachments = ref
+        .watch(draftAttachmentsProvider(widget.chatId))
+        .value;
+    if (attachments != null && attachments.isNotEmpty) {
+      return true;
+    }
+
+    return false;
   }
 
   Future<void> _attachFiles(WidgetRef ref) async {
@@ -84,17 +99,18 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
         .addAll(attachments);
   }
 
-  Future<void> _submit(WidgetRef ref) async {
-    if (_controller.text.trim().isEmpty) {
+  Future<void> _submit() async {
+    final text = _controller.text.trim();
+    if (text.isEmpty) {
       return;
     }
-
-    await ref
-        .read(draftTextProvider(widget.chatId).notifier)
-        .set(_controller.text);
 
     await ref.read(draftProvider(widget.chatId).notifier).send();
 
     _controller.clear();
+  }
+
+  Future<void> _setText(String text) {
+    return ref.read(draftTextProvider(widget.chatId).notifier).set(text.trim());
   }
 }
