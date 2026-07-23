@@ -20,7 +20,7 @@ void pushResponsivePage(
           borderRadius: kPillBorderRadius,
           side: .new(color: theme.colorScheme.outlineVariant),
         ),
-        clipBehavior: .antiAlias,
+        clipBehavior: .antiAliasWithSaveLayer,
         child: child,
       ),
     );
