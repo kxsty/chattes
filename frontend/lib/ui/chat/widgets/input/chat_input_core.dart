@@ -14,7 +14,8 @@ class ChatInputCore extends ConsumerStatefulWidget {
 }
 
 class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
-  late TextEditingController _controller;
+  late final TextEditingController _controller;
+  final FocusNode _focusNode = .new();
 
   @override
   void initState() {
@@ -23,12 +24,6 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
     final text = ref.watch(draftTextProvider(widget.chatId)).value;
 
     _controller = TextEditingController(text: text);
-  }
-
-  @override
-  Future<void> dispose() async {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -46,6 +41,7 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
             minLines: 1,
             maxLines: 20,
             controller: _controller,
+            focusNode: _focusNode,
             onSubmitted: (_) => _submit(),
             onChanged: (text) => _setText(text),
             textInputAction: .send,
@@ -106,9 +102,18 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
     }
 
     _controller.clear();
+
+    _focusNode.requestFocus();
   }
 
   Future<void> _setText(String text) {
     return ref.read(draftTextProvider(widget.chatId).notifier).set(text.trim());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
   }
 }
