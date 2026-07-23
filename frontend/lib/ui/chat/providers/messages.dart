@@ -26,7 +26,11 @@ class MessagesNotifier extends AsyncNotifier<MessagesState?> {
     );
   }
 
-  Future<void> add(String text, List<String> attachments) async {
+  Future<bool> add(String text, List<String> attachments) async {
+    if (text.trim().isEmpty && attachments.isEmpty) {
+      return false;
+    }
+
     final message = await Api().messages.post(
       request: .new(
         chatId: chatId,
@@ -43,6 +47,8 @@ class MessagesNotifier extends AsyncNotifier<MessagesState?> {
     state = AsyncData(value);
 
     ref.read(chatsProvider.notifier).setLastMessage(chatId, message);
+
+    return true;
   }
 
   Future<void> removeAt(int index) async {

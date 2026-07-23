@@ -23,19 +23,27 @@ class DraftNotifier extends Notifier<DraftState> {
   @override
   DraftState build() {
     final text = ref.watch(draftTextProvider(chatId)).value ?? "";
-    final attachments = ref.watch(draftAttachmentsProvider(chatId)).value ?? [];
+    final attachments =
+        ref.watch(draftAttachmentsProvider(chatId)).value ?? const [];
 
     return DraftState(text: text, attachments: attachments);
   }
 
-  Future<void> send() async {
+  Future<bool> send() async {
     final value = state;
 
-    await ref
+    final added = await ref
         .read(messagesProvider(chatId).notifier)
         .add(value.text, value.attachments);
+    if (!added) {
+      return false;
+    }
+
+    ref.read(draftTextProvider(chatId).notifier).destroy();
+    ref.read(draftAttachmentsProvider(chatId).notifier).destroy();
 
     state = const .new();
+    return true;
   }
 }
 
@@ -76,6 +84,8 @@ class DraftTextNotifier extends AsyncNotifier<String> {
       final instance = await SharedPreferences.getInstance();
       instance.remove(key);
     });
+
+    state = AsyncData("");
   }
 }
 
@@ -93,7 +103,7 @@ class DraftAttachmentsNotifier extends AsyncNotifier<List<String>> {
 
     ref.onDispose(() => _saveDebouncer.dispose());
 
-    return attachments ?? [];
+    return attachments ?? const [];
   }
 
   Future<void> addAll(Iterable<String> attachments) async {
@@ -135,6 +145,8 @@ class DraftAttachmentsNotifier extends AsyncNotifier<List<String>> {
       final instance = await SharedPreferences.getInstance();
       instance.remove(key);
     });
+
+    state = AsyncData(const []);
   }
 }
 

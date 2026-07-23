@@ -100,12 +100,10 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
   }
 
   Future<void> _submit() async {
-    final text = _controller.text.trim();
-    if (text.isEmpty) {
+    final sent = await ref.read(draftProvider(widget.chatId).notifier).send();
+    if (!sent) {
       return;
     }
-
-    await ref.read(draftProvider(widget.chatId).notifier).send();
 
     _controller.clear();
   }
