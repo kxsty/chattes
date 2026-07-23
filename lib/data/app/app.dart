@@ -8,6 +8,8 @@ import "chats.dart";
 import "messages.dart";
 import "package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart";
 
+// These functions are ignored because they are not marked as `pub`: `new_in_dir`
+
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<App>>
 abstract class App implements RustOpaqueInterface {
   Chats get chats;

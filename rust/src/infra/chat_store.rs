@@ -1,10 +1,11 @@
 use crate::domain::model::{ChatModel, Id, MessageModel};
 use crate::infra::error::Result;
-use crate::infra::fs_utils::{deserialize_from_file, ensure_parents_exist, serialize_to_file};
-use std::collections::BTreeSet;
+use crate::infra::fs_utils::{
+    deserialize_from_file, ensure_parents_exist, serialize_to_file, DirEntryNames,
+};
+use std::cmp::Ordering;
 use std::fs;
 use std::path::PathBuf;
-use std::str::FromStr;
 
 pub struct ChatStore {
     path: PathBuf,
@@ -17,34 +18,54 @@ impl ChatStore {
         Ok(Self { path })
     }
 
-    pub fn select(&self, take: usize, reverse: bool) -> Result<Vec<ChatModel>> {
-        let mut chats = BTreeSet::new();
+    pub fn select(
+        &self,
+        last_message_id_cursor: Option<Id>,
+        desc: bool,
+        limit: usize,
+    ) -> Result<Vec<ChatModel>> {
+        let last_message_id_cursor = last_message_id_cursor.unwrap_or_else(|| {
+            if desc {
+                Id::from_raw(u64::MAX)
+            } else {
+                Id::from_raw(u64::MIN)
+            }
+        });
 
-        let dir = self.path.read_dir()?;
-        for entry in dir {
-            let entry = entry?;
+        let ordering = if desc {
+            Ordering::Less
+        } else {
+            Ordering::Greater
+        };
 
-            let file_name = entry.file_name();
-            let file_name = file_name.to_str().unwrap_or("");
-            let Ok(id) = Id::from_str(&file_name) else {
-                continue;
-            };
+        let mut chats = Vec::with_capacity(limit);
+
+        for id in DirEntryNames::<Id>::new(&self.path)? {
+            let id = id?;
 
             let Some(chat) = self.find(&id)? else {
                 continue;
             };
 
-            chats.insert(chat);
-            if chats.len() >= take {
-                break;
+            let Some(last_message) = &chat.last_message else {
+                chats.push(chat);
+                continue;
+            };
+
+            if last_message.id.cmp(&last_message_id_cursor) == ordering {
+                chats.push(chat);
             }
         }
 
-        if reverse {
-            return Ok(chats.into_iter().rev().collect());
+        if desc {
+            chats.sort_unstable_by(|a, b| b.cmp(a));
+        } else {
+            chats.sort_unstable_by(|a, b| a.cmp(b));
         }
 
-        Ok(chats.into_iter().collect())
+        chats.truncate(limit);
+
+        Ok(chats)
     }
 
     pub fn find(&self, id: &Id) -> Result<Option<ChatModel>> {

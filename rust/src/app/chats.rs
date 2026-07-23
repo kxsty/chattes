@@ -18,9 +18,11 @@ impl Chats {
     }
 
     pub fn list(&self, request: ListChats) -> Result<Vec<Chat>> {
-        let chats = self
-            .chat_store
-            .select(request.limit as usize, request.desc)?;
+        let last_message_id_cursor = request.last_message_id_cursor.map(Id::from_raw);
+
+        let chats =
+            self.chat_store
+                .select(last_message_id_cursor, request.desc, request.limit as usize)?;
         let response = chats.into_iter().map(Chat::from).collect();
 
         Ok(response)

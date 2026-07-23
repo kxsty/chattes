@@ -1016,11 +1016,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ListChats dco_decode_list_chats(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception("unexpected arr length: expect 2 but see ${arr.length}");
+    if (arr.length != 3)
+      throw Exception("unexpected arr length: expect 3 but see ${arr.length}");
     return ListChats(
-      limit: dco_decode_u_32(arr[0]),
-      desc: dco_decode_bool(arr[1]),
+      lastMessageIdCursor: dco_decode_opt_CastedPrimitive_u_64(arr[0]),
+      limit: dco_decode_u_32(arr[1]),
+      desc: dco_decode_bool(arr[2]),
     );
   }
 
@@ -1494,9 +1495,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   ListChats sse_decode_list_chats(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_lastMessageIdCursor = sse_decode_opt_CastedPrimitive_u_64(
+      deserializer,
+    );
     var var_limit = sse_decode_u_32(deserializer);
     var var_desc = sse_decode_bool(deserializer);
-    return ListChats(limit: var_limit, desc: var_desc);
+    return ListChats(
+      lastMessageIdCursor: var_lastMessageIdCursor,
+      limit: var_limit,
+      desc: var_desc,
+    );
   }
 
   @protected
@@ -2021,6 +2029,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_list_chats(ListChats self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_CastedPrimitive_u_64(self.lastMessageIdCursor, serializer);
     sse_encode_u_32(self.limit, serializer);
     sse_encode_bool(self.desc, serializer);
   }

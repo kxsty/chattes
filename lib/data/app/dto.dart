@@ -112,19 +112,26 @@ class GetMessage {
 }
 
 class ListChats {
+  final int? lastMessageIdCursor;
   final int limit;
   final bool desc;
 
-  const ListChats({required this.limit, required this.desc});
+  const ListChats({
+    this.lastMessageIdCursor,
+    required this.limit,
+    required this.desc,
+  });
 
   @override
-  int get hashCode => limit.hashCode ^ desc.hashCode;
+  int get hashCode =>
+      lastMessageIdCursor.hashCode ^ limit.hashCode ^ desc.hashCode;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ListChats &&
           runtimeType == other.runtimeType &&
+          lastMessageIdCursor == other.lastMessageIdCursor &&
           limit == other.limit &&
           desc == other.desc;
 }

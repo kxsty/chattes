@@ -19,7 +19,9 @@ impl From<model::ChatModel> for Chat {
     }
 }
 
+#[frb(type_64bit_int)]
 pub struct ListChats {
+    pub last_message_id_cursor: Option<u64>,
     pub limit: u32,
     pub desc: bool,
 }
