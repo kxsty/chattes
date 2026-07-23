@@ -1,4 +1,5 @@
 import "package:chattes/data/frb_generated.dart";
+import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/core/rust_app.dart";
 import "package:chattes/ui/menu/providers/theme_mode.dart";
 import "package:chattes/ui/widget_tree.dart";
@@ -47,10 +48,10 @@ class App extends StatelessWidget {
               title: "Chattes",
               theme: .from(
                 colorScheme: lightColorScheme,
-              ).copyWith(highlightColor: const Color(0x00000000)),
+              ).copyWith(highlightColor: kColorTransparent),
               darkTheme: .from(
                 colorScheme: darkColorScheme,
-              ).copyWith(highlightColor: const Color(0x00000000)),
+              ).copyWith(highlightColor: kColorTransparent),
               themeMode: ref.watch(themeModeProvider),
               supportedLocales: const [Locale("en")],
               home: const WidgetTree(),

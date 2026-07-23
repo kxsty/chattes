@@ -16,7 +16,7 @@ class MessageWidget extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Material(
-      color: const Color(0x00000000),
+      color: kColorTransparent,
       child: InkWell(
         hoverColor: theme.hoverColor,
         onSecondaryTapDown: (details) =>

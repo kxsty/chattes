@@ -12,3 +12,5 @@ const double kPillBorderRadiusValue = 20.0;
 const BorderRadius kPillBorderRadius = .all(.circular(kPillBorderRadiusValue));
 
 const double kScreenWidthThreshold = 768.0;
+
+const Color kColorTransparent = .new(0x00000000);
