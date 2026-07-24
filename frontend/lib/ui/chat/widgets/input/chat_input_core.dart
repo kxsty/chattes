@@ -90,14 +90,14 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
   }
 
   Future<void> _submit() async {
+    _focusNode.requestFocus();
+
     final sent = await ref.read(draftProvider(widget.chatId).notifier).send();
     if (!sent) {
       return;
     }
 
     _controller.clear();
-
-    _focusNode.requestFocus();
   }
 
   Future<void> _setText(String text) {
