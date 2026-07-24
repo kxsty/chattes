@@ -1,3 +1,4 @@
+import "package:chattes/ui/menu/providers/chat_list_settings.dart";
 import "package:chattes/ui/menu/providers/chats.dart";
 import "package:chattes/ui/menu/widgets/chats/chat_tile.dart";
 import "package:flutter/material.dart";
@@ -11,8 +12,10 @@ class ChatList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(chatsProvider).value ?? [];
+    final style = ref.watch(chatListSettingsProvider).value ?? .new();
 
     return ListView.builder(
+      reverse: style.alignBottom,
       padding: bottomPadding != null ? .only(bottom: bottomPadding!) : null,
       itemCount: chats.length,
       itemBuilder: (context, index) =>
