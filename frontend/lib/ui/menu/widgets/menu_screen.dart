@@ -9,18 +9,11 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Navigator(
-      pages: [
-        MaterialPage(
-          child: Scaffold(
-            backgroundColor: theme.colorScheme.surfaceContainerLow,
-            body: ChatList(bottomPadding: kToolbarHeight),
-            extendBody: true,
-            bottomNavigationBar: MenuBottomBar(),
-          ),
-        ),
-      ],
-      onDidRemovePage: (_) {},
+    return Scaffold(
+      backgroundColor: theme.colorScheme.surfaceContainerLow,
+      extendBody: true,
+      body: ChatList(bottomPadding: kToolbarHeight),
+      bottomNavigationBar: MenuBottomBar(),
     );
   }
 }
