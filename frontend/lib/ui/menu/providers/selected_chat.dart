@@ -16,9 +16,14 @@ class SelectedChatIdNotifier extends Notifier<int?> {
 
 final selectedChatProvider = Provider.autoDispose((ref) {
   final id = ref.watch(selectedChatIdProvider);
-  if (id == null) return null;
+  if (id == null) {
+    return null;
+  }
 
-  final chats = ref.watch(chatsProvider).value ?? [];
+  final chats = ref.watch(chatsProvider).value;
+  if (chats == null) {
+    return null;
+  }
 
   return chats.firstWhere((chat) => chat.id == id);
 });
