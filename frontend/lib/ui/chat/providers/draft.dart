@@ -41,15 +41,15 @@ class DraftNotifier extends Notifier<MessageBody> {
       return false;
     }
 
-    ref.read(draftTextProvider(chatId).notifier).destroy();
-    ref.read(draftAttachmentsProvider(chatId).notifier).destroy();
+    ref.read(draftTextProvider(chatId).notifier).set(null);
+    ref.read(draftAttachmentsProvider(chatId).notifier).set(null);
 
     state = const .new();
     return true;
   }
 }
 
-class DraftTextNotifier extends AsyncNotifier<String> {
+class DraftTextNotifier extends AsyncNotifier<String?> {
   DraftTextNotifier(this.chatId);
 
   final int chatId;
@@ -66,36 +66,35 @@ class DraftTextNotifier extends AsyncNotifier<String> {
     return value ?? "";
   }
 
-  Future<void> set(String text) async {
+  Future<void> set(String? value) async {
     final oldValue = state.value;
     if (oldValue == null) {
       return;
     }
 
-    final value = text.trim();
+    value = value?.trim();
     if (value == oldValue) {
+      return;
+    }
+
+    if (value == null) {
+      final instance = await SharedPreferences.getInstance();
+      instance.remove(_key);
+
+      state = AsyncData(null);
       return;
     }
 
     _saveDebouncer.run(() async {
       final instance = await SharedPreferences.getInstance();
-      await instance.setString(_key, value);
+      await instance.setString(_key, value!);
     });
 
     state = AsyncData(value);
   }
-
-  Future<void> destroy() async {
-    _saveDebouncer.run(() async {
-      final instance = await SharedPreferences.getInstance();
-      instance.remove(_key);
-    });
-
-    state = AsyncData("");
-  }
 }
 
-class DraftAttachmentsNotifier extends AsyncNotifier<List<String>> {
+class DraftAttachmentsNotifier extends AsyncNotifier<List<String>?> {
   DraftAttachmentsNotifier(this.chatId);
 
   final int chatId;
@@ -110,6 +109,32 @@ class DraftAttachmentsNotifier extends AsyncNotifier<List<String>> {
     ref.onDispose(() => _saveDebouncer.dispose());
 
     return attachments ?? const [];
+  }
+
+  Future<void> set(List<String>? value) async {
+    final oldValue = state.value;
+    if (oldValue == null) {
+      return;
+    }
+
+    if (value == oldValue) {
+      return;
+    }
+
+    if (value == null) {
+      final instance = await SharedPreferences.getInstance();
+      instance.remove(_key);
+
+      state = AsyncData(null);
+      return;
+    }
+
+    _saveDebouncer.run(() async {
+      final instance = await SharedPreferences.getInstance();
+      await instance.setStringList(_key, value);
+    });
+
+    state = AsyncData(value);
   }
 
   Future<void> addAll(Iterable<String> attachments) async {
@@ -143,14 +168,5 @@ class DraftAttachmentsNotifier extends AsyncNotifier<List<String>> {
     });
 
     state = AsyncData(value);
-  }
-
-  Future<void> destroy() async {
-    _saveDebouncer.run(() async {
-      final instance = await SharedPreferences.getInstance();
-      instance.remove(_key);
-    });
-
-    state = AsyncData(const []);
   }
 }
