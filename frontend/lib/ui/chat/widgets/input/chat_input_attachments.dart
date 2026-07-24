@@ -22,7 +22,7 @@ class ChatInputAttachments extends ConsumerWidget {
       width: .infinity,
       padding: kPillMargin,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 256 + 8),
+        constraints: const BoxConstraints(maxHeight: 256),
         child: SingleChildScrollView(
           child: AttachmentList(
             attachments
