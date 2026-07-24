@@ -1,9 +1,9 @@
+use crate::app::ID_GENERATOR;
 use crate::app::dto::{
     DeleteMessage, GetMessage, ListMessages, Message, PatchMessage, PostMessage,
 };
 use crate::app::error::Error::Validation;
 use crate::app::error::Result;
-use crate::app::ID_GENERATOR;
 use crate::domain::model::{Id, Timestamp};
 use crate::infra::attachment_store::AttachmentStore;
 use crate::infra::chat_store::ChatStore;
@@ -11,6 +11,7 @@ use crate::infra::message_store::MessageStore;
 use chrono::Utc;
 use std::path::Path;
 use std::sync::Arc;
+use std::thread;
 
 #[derive(Clone)]
 pub struct Messages {
@@ -76,7 +77,7 @@ impl Messages {
         let mut attachemnts = Vec::with_capacity(request.attachments.len());
         // TODO: parallel execution
         for post_attachment in request.attachments.into_iter() {
-            let id = ID_GENERATOR.next_id(|_| panic!());
+            let id = ID_GENERATOR.next_id(|_| thread::yield_now());
 
             let attachment =
                 self.att_store
@@ -84,7 +85,7 @@ impl Messages {
             attachemnts.push(attachment);
         }
 
-        let id = ID_GENERATOR.next_id(|_| panic!());
+        let id = ID_GENERATOR.next_id(|_| thread::yield_now());
 
         let mut message =
             self.msg_store
