@@ -23,11 +23,6 @@ class ChatTile extends StatelessWidget {
         final isSelected = selectedChatId == chat.id;
 
         final draft = ref.watch(draftProvider(chat.id));
-        final MessageBody previewMessage = draft.isEmpty
-            ? chat.lastMessage != null
-                  ? .from(chat.lastMessage!)
-                  : .new()
-            : draft;
 
         return ListTile(
           onTap: () => ref.read(selectedChatIdProvider.notifier).set(chat.id),
@@ -39,44 +34,61 @@ class ChatTile extends StatelessWidget {
           hoverColor: isSelected
               ? theme.colorScheme.surfaceContainerLowest
               : theme.colorScheme.surface,
-          title: Row(
-            crossAxisAlignment: .end,
-            children: [
-              Expanded(
-                child: Text(
-                  chat.name,
-                  maxLines: 1,
-                  overflow: .ellipsis,
-                  style: theme.textTheme.titleSmall,
-                ),
-              ),
-
-              if (chat.lastMessage != null)
-                Text(
-                  chat.lastMessage!.sentAt.formatDateTime,
-                  style: theme.textTheme.bodySmall,
-                ),
-            ],
-          ),
-          subtitle: MessagePreview(
-            previewMessage,
-            isDraft: previewMessage == draft,
-          ),
+          title: _ChatTileTitle(chat: chat, draft: draft),
+          subtitle: _ChatTileSubtitle(chat: chat, draft: draft),
         );
       },
     );
   }
 }
 
-class MessagePreview extends StatelessWidget {
-  const MessagePreview(this.message, {super.key, this.isDraft = false});
+class _ChatTileTitle extends StatelessWidget {
+  const _ChatTileTitle({required this.chat, required this.draft});
 
-  final MessageBody message;
-  final bool isDraft;
+  final Chat chat;
+  final MessageBody draft;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    return Row(
+      crossAxisAlignment: .end,
+      children: [
+        Expanded(
+          child: Text(
+            chat.name,
+            maxLines: 1,
+            overflow: .ellipsis,
+            style: theme.textTheme.titleSmall,
+          ),
+        ),
+
+        if (draft.isEmpty && chat.lastMessage != null)
+          Text(
+            chat.lastMessage!.sentAt.formatDateTime,
+            style: theme.textTheme.bodySmall,
+          ),
+      ],
+    );
+  }
+}
+
+class _ChatTileSubtitle extends StatelessWidget {
+  const _ChatTileSubtitle({required this.chat, required this.draft});
+
+  final Chat chat;
+  final MessageBody draft;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final MessageBody message = draft.isEmpty
+        ? chat.lastMessage != null
+              ? .from(chat.lastMessage!)
+              : .new()
+        : draft;
 
     final height =
         (theme.textTheme.bodyMedium?.fontSize ?? 1) *
@@ -93,10 +105,10 @@ class MessagePreview extends StatelessWidget {
         textBaseline: .alphabetic,
         spacing: 4,
         children: [
-          if (isDraft)
+          if (!draft.isEmpty)
             Text("Draft: ", style: .new(color: theme.colorScheme.primary)),
           if (message.attachments.isNotEmpty)
-            MessagePreviewAttachments(count: message.attachments.length),
+            ChatTileMessageAttachments(count: message.attachments.length),
           if (message.text.isNotEmpty)
             Expanded(
               child: Text(
@@ -114,8 +126,8 @@ class MessagePreview extends StatelessWidget {
   }
 }
 
-class MessagePreviewAttachments extends StatelessWidget {
-  const MessagePreviewAttachments({super.key, required this.count});
+class ChatTileMessageAttachments extends StatelessWidget {
+  const ChatTileMessageAttachments({super.key, required this.count});
 
   final int count;
 
