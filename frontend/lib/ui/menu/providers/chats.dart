@@ -15,7 +15,9 @@ class ChatsNotifier extends AsyncNotifier<List<Chat>> {
     return value;
   }
 
-  Future<void> add(final String name) async {
+  Future<void> add(String name) async {
+    name = name.trim();
+
     final chat = await Api().chats.post(request: .new(name: name));
 
     final oldValue = state.value;

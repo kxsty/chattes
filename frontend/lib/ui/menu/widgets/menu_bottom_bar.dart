@@ -1,6 +1,6 @@
 import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/core/responsive_page.dart";
-import "package:chattes/ui/menu/widgets/add_chat/add_chat_screen.dart";
+import "package:chattes/ui/menu/widgets/new_chat/new_chat_screen.dart";
 import "package:chattes/ui/menu/widgets/settings/settings_screen.dart";
 import "package:flutter/material.dart";
 
@@ -32,7 +32,7 @@ class MenuBottomBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             Expanded(
               child: IconButton(
-                onPressed: () => pushResponsivePage(context, AddChatScreen()),
+                onPressed: () => pushResponsivePage(context, NewChatScreen()),
                 icon: const Icon(Icons.add_rounded),
                 color: theme.colorScheme.secondary,
               ),
