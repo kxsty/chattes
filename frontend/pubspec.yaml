@@ -44,6 +44,7 @@ dependencies:
   path: ^1.9.1
   rust_lib_chattes:
     path: rust_builder
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:

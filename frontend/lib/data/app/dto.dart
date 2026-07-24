@@ -39,10 +39,10 @@ class Chat {
       return 0;
     }
     if (lastMessage == null) {
-      return -1;
+      return 1;
     }
     if (other.lastMessage == null) {
-      return 1;
+      return -1;
     }
 
     final lastMessageCmp = lastMessage!.compareTo(other.lastMessage!);
@@ -51,6 +51,14 @@ class Chat {
     }
 
     return id.compareTo(other.id);
+  }
+
+  Chat copyWith({int? id, String? name, Message? lastMessage}) {
+    return Chat(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      lastMessage: lastMessage ?? this.lastMessage,
+    );
   }
 
   @override

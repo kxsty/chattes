@@ -23,9 +23,13 @@ pub struct ChatModel {
 }
 impl Ord for ChatModel {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.last_message
-            .cmp(&other.last_message)
-            .then(self.id.cmp(&other.id))
+        match (&self.last_message, &other.last_message) {
+            (None, None) => Ordering::Equal,
+            (None, Some(_)) => Ordering::Greater,
+            (Some(_), None) => Ordering::Less,
+            (Some(a), Some(b)) => a.cmp(b),
+        }
+        .then(self.id.cmp(&other.id))
     }
 }
 
