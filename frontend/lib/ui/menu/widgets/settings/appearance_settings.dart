@@ -52,7 +52,7 @@ class _ChatListAlignmentSelector extends StatelessWidget {
 
           onSelectionChanged: (Set<bool> selection) => ref
               .read(chatListSettingsProvider.notifier)
-              .setReverse(selection.first),
+              .setAlignBottom(selection.first),
         ),
       ),
     );

@@ -8,12 +8,12 @@ final chatListSettingsProvider = AsyncNotifierProvider.autoDispose(
 );
 
 class ChatListSettingsNotifier extends AsyncNotifier<ChatListSettings> {
-  static const key = "chat_list_settings";
+  static const _key = "chat_list_settings";
 
   @override
   Future<ChatListSettings> build() async {
     final instance = await SharedPreferences.getInstance();
-    final json = instance.getString(key);
+    final json = instance.getString(_key);
     if (json == null) {
       return .new();
     }
@@ -21,23 +21,24 @@ class ChatListSettingsNotifier extends AsyncNotifier<ChatListSettings> {
     return .fromJson(jsonDecode(json));
   }
 
-  Future<void> setReverse(bool reverse) async {
+  Future<void> setAlignBottom(bool alignBottom) async {
     final oldValue = state.value;
+    if (oldValue == null) {
+      return;
+    }
 
-    final ChatListSettings value = oldValue == null
-        ? .new(alignBottom: reverse)
-        : oldValue.copyWith(alignBottom: reverse);
+    final value = oldValue.copyWith(alignBottom: alignBottom);
 
     final json = jsonEncode(value.toJson());
     final instance = await SharedPreferences.getInstance();
-    instance.setString(key, json);
+    instance.setString(_key, json);
 
     state = AsyncData(value);
   }
 }
 
 class ChatListSettings {
-  ChatListSettings({this.alignBottom = false});
+  const ChatListSettings({this.alignBottom = false});
 
   final bool alignBottom;
 
