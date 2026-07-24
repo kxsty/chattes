@@ -32,30 +32,39 @@ class _WidgetTreeState extends State<WidgetTree> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (_isPhone(constraints)) {
-          return Consumer(
-            builder: (context, ref, child) {
-              return Navigator(
-                pages: [
-                  MaterialPage(child: MenuScreen()),
-                  if (ref.watch(selectedChatIdProvider) != null)
-                    MaterialPage(child: ChatScreen()),
-                ],
-                onDidRemovePage: (_) =>
-                    ref.read(selectedChatIdProvider.notifier).set(null),
-              );
-            },
-          );
+        if (_isMobile(constraints)) {
+          return _mobileLayout();
         } else {
-          return Row(
-            children: [
-              SizedBox(width: _menuDividerWidth, child: MenuScreen()),
-              MenuDivider(onHorizontalOffestUpdate: _onDividerDrag),
-              Expanded(child: ChatScreen()),
-            ],
-          );
+          return _tabletLayout();
         }
       },
+    );
+  }
+
+  Widget _mobileLayout() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final isChatSelected = ref.watch(selectedChatIdProvider) != null;
+
+        return Navigator(
+          pages: [
+            MaterialPage(child: MenuScreen()),
+            if (isChatSelected) MaterialPage(child: ChatScreen()),
+          ],
+          onDidRemovePage: (_) =>
+              ref.read(selectedChatIdProvider.notifier).set(null),
+        );
+      },
+    );
+  }
+
+  Widget _tabletLayout() {
+    return Row(
+      children: [
+        SizedBox(width: _menuDividerWidth, child: MenuScreen()),
+        MenuDivider(onHorizontalOffestUpdate: _onDividerDrag),
+        Expanded(child: ChatScreen()),
+      ],
     );
   }
 
@@ -68,7 +77,7 @@ class _WidgetTreeState extends State<WidgetTree> {
     });
   }
 
-  bool _isPhone(BoxConstraints constraints) {
+  bool _isMobile(BoxConstraints constraints) {
     return constraints.maxWidth < kScreenWidthThreshold;
   }
 }
