@@ -7,7 +7,6 @@ void pushResponsivePage(
   BoxConstraints? constraints,
 }) {
   final mediaSize = MediaQuery.of(context).size;
-  final theme = Theme.of(context);
 
   if (mediaSize.width < kScreenWidthThreshold) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => child));
@@ -16,10 +15,7 @@ void pushResponsivePage(
       context: context,
       builder: (context) => Dialog(
         constraints: constraints ?? const .expand(width: 512),
-        shape: RoundedRectangleBorder(
-          borderRadius: kPillBorderRadius,
-          side: .new(color: theme.colorScheme.outlineVariant),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: kPillBorderRadius),
         clipBehavior: .antiAliasWithSaveLayer,
         child: child,
       ),
