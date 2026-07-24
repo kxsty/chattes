@@ -52,7 +52,7 @@ class App extends StatelessWidget {
               darkTheme: .from(
                 colorScheme: darkColorScheme,
               ).copyWith(highlightColor: kColorTransparent),
-              themeMode: ref.watch(themeModeProvider),
+              themeMode: ref.watch(themeModeProvider).value ?? .system,
               supportedLocales: const [Locale("en")],
               home: const WidgetTree(),
             );

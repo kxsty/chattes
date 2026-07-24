@@ -89,7 +89,7 @@ class _ThemeSelector extends StatelessWidget {
             ),
           ],
 
-          selected: {ref.watch(themeModeProvider)},
+          selected: {ref.watch(themeModeProvider).value ?? .system},
 
           onSelectionChanged: (Set<ThemeMode> selection) =>
               ref.read(themeModeProvider.notifier).set(selection.first),
