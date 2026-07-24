@@ -39,7 +39,7 @@ impl App {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::app::dto::{ListChats, PostChat, PostMessage};
+    use crate::app::dto::{ListChats, ListMessages, PostChat, PostMessage};
     use tempfile::TempDir;
 
     #[test]
@@ -97,6 +97,65 @@ mod test {
 
         assert_eq!(chat_list.len(), chat_list_desc.len());
         for (a, b) in chat_list.iter().zip(chat_list_desc.iter().rev()) {
+            assert_eq!(a.id, b.id);
+        }
+    }
+
+    #[test]
+    fn messages_list_correct_order() {
+        const COUNT: usize = 100;
+
+        let temp_dir = TempDir::new().unwrap();
+
+        let app = App::new_in_dir(temp_dir.path());
+
+        let chat = app
+            .chats
+            .post(PostChat {
+                name: "messages_list_correct_order".to_string(),
+            })
+            .unwrap();
+
+        let mut msg_list = Vec::with_capacity(COUNT);
+        for _ in 0..COUNT {
+            msg_list.push(
+                app.messages
+                    .post(PostMessage {
+                        chat_id: chat.id,
+                        text: Default::default(),
+                        attachments: Default::default(),
+                    })
+                    .unwrap(),
+            );
+        }
+
+        let msg_list_asc = app
+            .messages
+            .list(ListMessages {
+                chat_id: chat.id,
+                id_cursor: None,
+                limit: COUNT as u32,
+                desc: false,
+            })
+            .unwrap();
+
+        assert_eq!(msg_list.len(), msg_list_asc.len());
+        for (a, b) in msg_list.iter().zip(msg_list_asc.iter()) {
+            assert_eq!(a.id, b.id);
+        }
+
+        let msg_list_desc = app
+            .messages
+            .list(ListMessages {
+                chat_id: chat.id,
+                id_cursor: None,
+                limit: COUNT as u32,
+                desc: true,
+            })
+            .unwrap();
+
+        assert_eq!(msg_list.len(), msg_list_desc.len());
+        for (a, b) in msg_list.iter().zip(msg_list_desc.iter().rev()) {
             assert_eq!(a.id, b.id);
         }
     }
