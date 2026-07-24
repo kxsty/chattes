@@ -1,6 +1,5 @@
-import "package:chattes/ui/menu/providers/theme_mode.dart";
+import "package:chattes/ui/menu/widgets/settings/appearance_settings.dart";
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -9,44 +8,26 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Settings")),
-      body: ListView(children: [AppearanceSelector()]),
+      body: ListView(children: const [AppearanceSettings()]),
     );
   }
 }
 
-class AppearanceSelector extends StatelessWidget {
-  const AppearanceSelector({super.key});
+class SettingsHeader extends StatelessWidget {
+  const SettingsHeader({super.key, required this.title});
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ListTile(
-      title: const Text("Appearance"),
-      trailing: Consumer(
-        builder: (context, ref, child) {
-          return SegmentedButton<ThemeMode>(
-            showSelectedIcon: false,
-            segments: const [
-              ButtonSegment(
-                value: ThemeMode.system,
-                icon: Icon(Icons.brightness_auto),
-                tooltip: "System",
-              ),
-              ButtonSegment(
-                value: ThemeMode.light,
-                icon: Icon(Icons.light_mode),
-                tooltip: "Light",
-              ),
-              ButtonSegment(
-                value: ThemeMode.dark,
-                icon: Icon(Icons.dark_mode),
-                tooltip: "Dark",
-              ),
-            ],
-            selected: {ref.watch(themeModeProvider)},
-            onSelectionChanged: (Set<ThemeMode> newSelection) =>
-                ref.read(themeModeProvider.notifier).set(newSelection.first),
-          );
-        },
+      title: Text(
+        title,
+        style: theme.textTheme.titleMedium?.copyWith(
+          color: theme.colorScheme.primary,
+        ),
       ),
     );
   }
