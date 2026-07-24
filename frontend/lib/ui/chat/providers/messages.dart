@@ -4,30 +4,72 @@ import "package:chattes/data/app/dto.dart";
 import "package:chattes/domain/models/message_body.dart";
 import "package:chattes/ui/core/rust_app.dart";
 import "package:chattes/ui/menu/providers/chats.dart";
+import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 final messagesProvider = AsyncNotifierProvider.autoDispose.family(
   MessagesNotifier.new,
 );
 
-class MessagesNotifier extends AsyncNotifier<MessagesState?> {
+class MessagesNotifier extends AsyncNotifier<MessagesState> {
   MessagesNotifier(this.chatId);
 
   final int chatId;
 
+  static const _limit = 100;
+
   @override
-  Future<MessagesState?> build() async {
-    final response = await Api().messages.list(
-      request: .new(chatId: chatId, limit: 100, desc: false),
+  Future<MessagesState> build() async {
+    final messages = await Api().messages.list(
+      request: ListMessages(
+        chatId: chatId,
+        idCursor: null,
+        limit: _limit,
+        desc: true,
+      ),
     );
 
-    return MessagesState(
-      messages: response,
-      hasMorePrev: response.length >= 100,
+    return .new(
+      messages: messages.reversed.toList(),
+      hasPrev: messages.length == _limit,
     );
   }
 
+  Future<void> loadPrev() async {
+    final oldValue = state.value;
+    if (oldValue == null || !oldValue.hasPrev) {
+      return;
+    }
+
+    try {
+      final firstMessage = oldValue.messages.firstOrNull;
+
+      final olderMessages = await Api().messages.list(
+        request: ListMessages(
+          chatId: chatId,
+          idCursor: firstMessage?.id,
+          limit: _limit,
+          desc: true,
+        ),
+      );
+
+      final value = oldValue.copyWith(
+        messages: [...olderMessages.reversed, ...oldValue.messages],
+        hasPrev: olderMessages.length == _limit,
+      );
+
+      state = AsyncData(value);
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+    }
+  }
+
   Future<bool> add(MessageBody body) async {
+    final oldValue = state.value;
+    if (oldValue == null) {
+      return false;
+    }
+
     if (body.isEmpty) {
       return false;
     }
@@ -42,10 +84,7 @@ class MessagesNotifier extends AsyncNotifier<MessagesState?> {
       ),
     );
 
-    final oldValue = state.value;
-    final value = oldValue?.copyWith() ?? .new();
-
-    value.messages.add(message);
+    final value = oldValue.copyWith(messages: [...oldValue.messages, message]);
 
     state = AsyncData(value);
 
@@ -59,7 +98,8 @@ class MessagesNotifier extends AsyncNotifier<MessagesState?> {
     if (oldValue == null) {
       return;
     }
-    final value = oldValue.copyWith();
+
+    final value = oldValue.copyWith(messages: [...oldValue.messages]);
 
     final message = value.messages.removeAt(index);
 
@@ -74,27 +114,17 @@ class MessagesNotifier extends AsyncNotifier<MessagesState?> {
   }
 }
 
+@immutable
 class MessagesState {
-  const MessagesState({
-    this.messages = const [],
-    this.hasMoreNext = true,
-    this.hasMorePrev = true,
-  });
+  const MessagesState({this.messages = const [], this.hasPrev = true});
 
   final List<Message> messages;
-  final bool hasMoreNext;
-  final bool hasMorePrev;
+  final bool hasPrev;
 
-  MessagesState copyWith({
-    List<Message>? messages,
-    bool? hasMoreNext,
-    bool? hasMorePrev,
-    bool? isLoadingMore,
-  }) {
+  MessagesState copyWith({List<Message>? messages, bool? hasPrev}) {
     return MessagesState(
       messages: messages ?? this.messages,
-      hasMoreNext: hasMoreNext ?? this.hasMoreNext,
-      hasMorePrev: hasMorePrev ?? this.hasMorePrev,
+      hasPrev: hasPrev ?? this.hasPrev,
     );
   }
 }

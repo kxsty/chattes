@@ -29,9 +29,7 @@ class ChatsNotifier extends AsyncNotifier<List<Chat>> {
 
     final chat = await Api().chats.post(request: .new(name: name));
 
-    final value = [...oldValue];
-
-    value.add(chat);
+    final value = [...oldValue, chat];
     assert(value.isSorted((a, b) => a.compareTo(b)));
 
     state = AsyncData(value);

@@ -1,5 +1,7 @@
 import "package:chattes/data/app/dto.dart";
+import "package:flutter/material.dart";
 
+@immutable
 class MessageBody {
   const MessageBody({this.text = "", this.attachments = const []});
   MessageBody.from(Message message)
