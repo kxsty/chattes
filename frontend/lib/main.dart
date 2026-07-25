@@ -11,54 +11,43 @@ Future<void> main() async {
   await RustLib.init();
   await Api().initialize();
 
-  runApp(const App());
+  final themeMode = await ThemeModeNotifier().build();
+
+  runApp(
+    ProviderScope(
+      overrides: [themeModeProvider.overrideWithBuild((_, _) => themeMode)],
+      child: const _App(),
+    ),
+  );
 }
 
-class App extends StatelessWidget {
-  const App({super.key});
+class _App extends StatelessWidget {
+  const _App();
 
   @override
-  Widget build(BuildContext context) => ProviderScope(
-    child: DynamicColorBuilder(
-      builder: (lightDynamic, darkDynamic) {
-        ColorScheme lightColorScheme;
-        ColorScheme darkColorScheme;
+  Widget build(BuildContext context) => DynamicColorBuilder(
+    builder: (lightDynamic, darkDynamic) {
+      if (lightDynamic == null || darkDynamic == null) {
+        return const SizedBox.shrink();
+      }
 
-        if (lightDynamic != null && darkDynamic != null) {
-          lightColorScheme = lightDynamic.copyWith(
-            outlineVariant: HSLColor.fromColor(
-              lightDynamic.outlineVariant,
-            ).withLightness(0.8).toColor(),
+      return Consumer(
+        builder: (context, ref, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: "Chattes",
+            theme: .from(
+              colorScheme: lightDynamic,
+            ).copyWith(highlightColor: kColorTransparent),
+            darkTheme: .from(
+              colorScheme: darkDynamic,
+            ).copyWith(highlightColor: kColorTransparent),
+            themeMode: ref.watch(themeModeProvider).value ?? .system,
+            supportedLocales: const [Locale("en")],
+            home: const WidgetTree(),
           );
-
-          darkColorScheme = darkDynamic.copyWith(
-            outlineVariant: HSLColor.fromColor(
-              darkDynamic.outlineVariant,
-            ).withLightness(0.2).toColor(),
-          );
-        } else {
-          lightColorScheme = .light();
-          darkColorScheme = .dark();
-        }
-
-        return Consumer(
-          builder: (context, ref, child) {
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: "Chattes",
-              theme: .from(
-                colorScheme: lightColorScheme,
-              ).copyWith(highlightColor: kColorTransparent),
-              darkTheme: .from(
-                colorScheme: darkColorScheme,
-              ).copyWith(highlightColor: kColorTransparent),
-              themeMode: ref.watch(themeModeProvider).value ?? .system,
-              supportedLocales: const [Locale("en")],
-              home: const WidgetTree(),
-            );
-          },
-        );
-      },
-    ),
+        },
+      );
+    },
   );
 }
