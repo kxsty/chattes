@@ -2,6 +2,7 @@ import "package:chattes/ui/chat/providers/draft.dart";
 import "package:chattes/ui/core/constants.dart";
 import "package:file_picker/file_picker.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 class ChatInputCore extends ConsumerStatefulWidget {
@@ -14,31 +15,33 @@ class ChatInputCore extends ConsumerStatefulWidget {
 }
 
 class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
-  final TextEditingController _controller = .new();
-  final FocusNode _focusNode = .new();
+  final TextEditingController _textController = .new();
+  late final FocusNode _focusNode = .new(onKeyEvent: _onKeyEvent);
 
   @override
   Widget build(BuildContext context) {
-    final text = ref.watch(draftTextProvider(widget.chatId)).value;
-    _controller.text = text ?? _controller.text;
+    final value = ref.watch(draftTextProvider(widget.chatId));
+    value.whenData((text) {
+      text = text ?? "";
+      if (_textController.text != text) {
+        _textController.text = text;
+      }
+    });
 
     return Row(
       crossAxisAlignment: .end,
       children: [
         IconButton(
           icon: const Icon(Icons.attach_file_rounded),
-          onPressed: () => _attachFiles(ref),
+          onPressed: () => _attachFiles(),
           constraints: const .expand(height: 38, width: 38),
         ),
         Expanded(
           child: TextField(
-            minLines: 1,
-            maxLines: 20,
-            controller: _controller,
+            maxLines: null,
+            controller: _textController,
             focusNode: _focusNode,
-            onSubmitted: (_) => _submit(),
-            onChanged: (text) => _setText(text),
-            textInputAction: .send,
+            onChanged: _setText,
             decoration: const InputDecoration(
               isCollapsed: true,
               contentPadding: .symmetric(vertical: 11),
@@ -59,23 +62,11 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
     );
   }
 
-  bool _anyInput() {
-    final text = ref.watch(draftTextProvider(widget.chatId)).value;
-    if (text != null && text.isNotEmpty) {
-      return true;
-    }
-
-    final attachments = ref
-        .watch(draftAttachmentsProvider(widget.chatId))
-        .value;
-    if (attachments != null && attachments.isNotEmpty) {
-      return true;
-    }
-
-    return false;
+  Future<void> _setText(String text) {
+    return ref.read(draftTextProvider(widget.chatId).notifier).set(text);
   }
 
-  Future<void> _attachFiles(WidgetRef ref) async {
+  Future<void> _attachFiles() async {
     final result = await FilePicker.pickFiles();
     if (result == null || result.files.isEmpty) return;
 
@@ -97,16 +88,34 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
       return;
     }
 
-    _controller.clear();
+    _textController.clear();
   }
 
-  Future<void> _setText(String text) {
-    return ref.read(draftTextProvider(widget.chatId).notifier).set(text.trim());
+  bool _anyInput() {
+    return !ref.watch(draftProvider(widget.chatId)).isEmpty;
+  }
+
+  KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) {
+      return .ignored;
+    }
+
+    if (HardwareKeyboard.instance.isControlPressed ||
+        HardwareKeyboard.instance.isShiftPressed) {
+      return .ignored;
+    }
+
+    if (event.logicalKey != .enter && event.logicalKey != .numpadEnter) {
+      return .ignored;
+    }
+
+    _submit();
+    return .handled;
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _textController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
