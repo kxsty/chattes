@@ -67,12 +67,11 @@ class DraftTextNotifier extends AsyncNotifier<String?> {
   }
 
   Future<void> set(String? value) async {
-    final oldValue = state.value;
-    if (oldValue == null) {
+    if (state is! AsyncData) {
       return;
     }
 
-    value = value?.trim();
+    final oldValue = state.value;
     if (value == oldValue) {
       return;
     }
@@ -112,11 +111,11 @@ class DraftAttachmentsNotifier extends AsyncNotifier<List<String>?> {
   }
 
   Future<void> set(List<String>? value) async {
-    final oldValue = state.value;
-    if (oldValue == null) {
+    if (state is! AsyncData) {
       return;
     }
 
+    final oldValue = state.value;
     if (value == oldValue) {
       return;
     }
