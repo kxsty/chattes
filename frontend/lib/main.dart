@@ -36,12 +36,20 @@ class _App extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: "Chattes",
-            theme: .from(
-              colorScheme: lightDynamic,
-            ).copyWith(highlightColor: kColorTransparent),
-            darkTheme: .from(
-              colorScheme: darkDynamic,
-            ).copyWith(highlightColor: kColorTransparent),
+            theme: .from(colorScheme: lightDynamic).copyWith(
+              highlightColor: kColorTransparent,
+              actionIconTheme: .new(
+                backButtonIconBuilder: (_) =>
+                    const Icon(Icons.arrow_back_rounded),
+              ),
+            ),
+            darkTheme: .from(colorScheme: darkDynamic).copyWith(
+              highlightColor: kColorTransparent,
+              actionIconTheme: .new(
+                backButtonIconBuilder: (_) =>
+                    const Icon(Icons.arrow_back_rounded),
+              ),
+            ),
             themeMode: ref.watch(themeModeProvider).value ?? .system,
             supportedLocales: const [Locale("en")],
             home: const WidgetTree(),

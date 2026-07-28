@@ -20,24 +20,18 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
           crossAxisAlignment: .center,
           spacing: 8,
           children: [
-            if (canPop)
-              Pill(
-                child: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_rounded),
-                ),
-              ),
+            if (canPop) Pill(child: BackButton()),
 
             Flexible(
               child: Align(
-                alignment: Alignment.centerLeft,
+                alignment: .centerLeft,
                 child: Pill(
                   child: Consumer(
                     builder: (context, ref, child) {
                       final selectedChat = ref.watch(selectedChatProvider);
 
                       return Row(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: .min,
                         children: [
                           LetterAvatar(title: selectedChat!.name, radius: 19),
 
@@ -47,7 +41,7 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
                               child: Text(
                                 selectedChat.name,
                                 style: theme.textTheme.titleLarge,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: .ellipsis,
                                 maxLines: 1,
                               ),
                             ),
