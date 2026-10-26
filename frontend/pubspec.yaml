@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.12.2
+  sdk: ^3.13.7
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -31,20 +31,19 @@ dependencies:
   flutter:
     sdk: flutter
 
-  file_picker: ^12.0.0-beta.7
-  open_file: ^4.0.0
-  shared_preferences: ^2.5.5
-  flutter_rust_bridge: 2.12.0
-  integration_test:
-    sdk: flutter
-  flutter_riverpod: ^3.3.2
-  riverpod_lint: ^3.1.4
-  riverpod_annotation: ^4.0.3
-  dynamic_color: ^1.8.1
-  path: ^1.9.1
   rust_lib_chattes:
     path: rust_builder
+  flutter_rust_bridge: ^2.13.0
+  file_picker: ^13.3.0
+  open_file: ^4.0.0
+  shared_preferences: ^2.5.6
+  flutter_riverpod: ^3.4.3
+  riverpod_lint: ^3.1.9
+  riverpod_annotation: ^4.0.7
+  dynamic_color: ^1.9.0
+  path: ^1.9.1
   collection: ^1.19.1
+  freezed_annotation: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -56,8 +55,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  riverpod_generator: ^4.0.4
-  build_runner: ^2.15.0
+  integration_test:
+    sdk: flutter
+  riverpod_generator: ^4.0.9
+  build_runner: ^2.16.2
+  freezed: ^4.0.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -37,7 +37,7 @@ class ChatsNotifier extends AsyncNotifier<List<Chat>> {
     ref.read(selectedChatIdProvider.notifier).set(chat.id);
   }
 
-  void setLastMessage(final int chatId, final Message? lastMessage) {
+  void setLastMessage(int chatId, Message? lastMessage) {
     final oldValue = state.value;
     if (oldValue == null) {
       return;

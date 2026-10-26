@@ -3,7 +3,7 @@ use std::fmt::{Debug, Display, Formatter};
 use std::num::ParseIntError;
 
 #[derive(Debug)]
-pub struct ValidationError(String);
+pub struct ValidationError(pub String);
 impl From<String> for ValidationError {
     fn from(value: String) -> Self {
         Self(value)

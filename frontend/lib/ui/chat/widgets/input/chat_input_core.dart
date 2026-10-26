@@ -68,9 +68,9 @@ class _ChatInputCoreState extends ConsumerState<ChatInputCore> {
 
   Future<void> _attachFiles() async {
     final result = await FilePicker.pickFiles();
-    if (result == null || result.files.isEmpty) return;
+    if (result.isEmpty) return;
 
-    final attachments = result.files
+    final attachments = result
         .map((e) => e.path)
         .whereType<String>()
         .toList();

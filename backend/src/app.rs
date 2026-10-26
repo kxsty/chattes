@@ -6,7 +6,7 @@ use std::sync::LazyLock;
 pub mod app;
 pub mod chats;
 pub mod dto;
-mod error;
+pub mod error;
 pub mod messages;
 
 pub static ID_GENERATOR: LazyLock<AtomicSnowflakeGenerator<SnowflakeDiscordId, MonotonicClock>> =
