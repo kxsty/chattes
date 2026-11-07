@@ -86,7 +86,7 @@ class DraftTextNotifier extends AsyncNotifier<String?> {
 
     _saveDebouncer.run(() async {
       final instance = await SharedPreferences.getInstance();
-      await instance.setString(_key, value!);
+      await instance.setString(_key, value);
     });
 
     state = AsyncData(value);
