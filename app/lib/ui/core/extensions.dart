@@ -1,4 +1,4 @@
-import "package:chattes/data/app/dto.dart";
+import "package:chattes/core/app/dto.dart";
 import "package:path/path.dart" as path_dart;
 
 extension Formatting on DateTime {

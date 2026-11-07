@@ -59,7 +59,7 @@
 /dev/integration_tests/**/xcuserdata
 /dev/integration_tests/**/Pods
 /packages/flutter/coverage/
-version
+/version
 analysis_benchmark.json
 
 # packages file containing multi-root paths
@@ -171,3 +171,7 @@ app.*.symbols
 .agents/rules/personal-*
 .agents/skills/personal-*
 /.agent-shell/
+
+# flutter_rust_bridge
+lib/core/*
+frb_generated.h

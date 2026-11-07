@@ -1,4 +1,4 @@
-import "package:chattes/data/app/dto.dart";
+import "package:chattes/core/app/dto.dart";
 import "package:chattes/ui/chat/providers/draft.dart";
 import "package:chattes/ui/chat/widgets/attachments/attachment_list.dart";
 import "package:chattes/ui/core/constants.dart";

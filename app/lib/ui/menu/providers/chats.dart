@@ -1,6 +1,6 @@
 import "dart:async";
 
-import "package:chattes/data/app/dto.dart";
+import "package:chattes/core/app/dto.dart";
 import "package:chattes/ui/core/rust_app.dart";
 import "package:chattes/ui/menu/providers/selected_chat.dart";
 import "package:collection/collection.dart";

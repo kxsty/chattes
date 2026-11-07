@@ -1,4 +1,4 @@
-import "package:chattes/data/frb_generated.dart";
+import "package:chattes/core/frb_generated.dart";
 import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/core/rust_app.dart";
 import "package:chattes/ui/menu/providers/theme_mode.dart";

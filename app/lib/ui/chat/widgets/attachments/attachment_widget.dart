@@ -1,4 +1,4 @@
-import "package:chattes/data/app/dto.dart";
+import "package:chattes/core/app/dto.dart";
 import "package:chattes/ui/core/constants.dart";
 import "package:chattes/ui/core/extensions.dart";
 import "package:flutter/material.dart";

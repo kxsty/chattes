@@ -1,6 +1,6 @@
-import "package:chattes/data/app/app.dart";
-import "package:chattes/data/app/chats.dart";
-import "package:chattes/data/app/messages.dart";
+import "package:chattes/core/app/app.dart";
+import "package:chattes/core/app/chats.dart";
+import "package:chattes/core/app/messages.dart";
 
 class Api {
   Api._internal();
