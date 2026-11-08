@@ -106,7 +106,10 @@ class _ChatTileSubtitle extends StatelessWidget {
         spacing: 4,
         children: [
           if (!draft.isEmpty)
-            Text("Draft: ", style: .new(color: theme.colorScheme.primary)),
+            Text(
+              "Draft: ",
+              style: .new(color: theme.colorScheme.primary, fontStyle: .italic),
+            ),
           if (message.attachments.isNotEmpty)
             ChatTileMessageAttachments(count: message.attachments.length),
           if (message.text.isNotEmpty)
