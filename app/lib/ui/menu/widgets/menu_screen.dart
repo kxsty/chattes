@@ -12,7 +12,11 @@ class MenuScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.colorScheme.surfaceContainerLow,
       extendBody: true,
-      body: ChatList(bottomPadding: kToolbarHeight),
+      body: SafeArea(
+        top: true,
+        maintainBottomViewPadding: true,
+        child: ChatList(bottomPadding: kToolbarHeight),
+      ),
       bottomNavigationBar: MenuBottomBar(),
     );
   }
