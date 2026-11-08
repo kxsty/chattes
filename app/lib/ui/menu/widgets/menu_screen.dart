@@ -13,8 +13,7 @@ class MenuScreen extends StatelessWidget {
       backgroundColor: theme.colorScheme.surfaceContainerLow,
       extendBody: true,
       body: SafeArea(
-        top: true,
-        maintainBottomViewPadding: true,
+        bottom: false,
         child: ChatList(bottomPadding: kToolbarHeight),
       ),
       bottomNavigationBar: MenuBottomBar(),
