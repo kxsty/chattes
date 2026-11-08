@@ -14,12 +14,9 @@ pub struct App {
 
 impl App {
     #[must_use]
-    pub fn new() -> Self {
-        let data_dir = dirs::data_dir().expect("No data directory");
-        Self::new_in_dir(&data_dir)
-    }
+    pub fn new(dir: &str) -> Self {
+        let dir = Path::new(dir);
 
-    fn new_in_dir(dir: &Path) -> Self {
         let app_dir = dir.join("Chattes");
         fs::create_dir_all(&app_dir).expect("Failed to create app data directory");
 
@@ -36,12 +33,6 @@ impl App {
     }
 }
 
-impl Default for App {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -54,7 +45,7 @@ mod test {
 
         let temp_dir = TempDir::new().unwrap();
 
-        let app = App::new_in_dir(temp_dir.path());
+        let app = App::new(temp_dir.path().to_str().unwrap_or_default());
 
         let mut chat_list = Vec::with_capacity(COUNT as usize);
         for i in 0..COUNT {
@@ -113,7 +104,7 @@ mod test {
 
         let temp_dir = TempDir::new().unwrap();
 
-        let app = App::new_in_dir(temp_dir.path());
+        let app = App::new(temp_dir.path().to_str().unwrap_or_default());
 
         let chat = app
             .chats

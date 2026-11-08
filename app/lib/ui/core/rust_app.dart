@@ -11,8 +11,8 @@ class Api {
 
   late final App _app;
 
-  Future<void> initialize() async {
-    _app = await App.newInstance();
+  Future<void> initialize(String dir) async {
+    _app = await App.newInstance(dir: dir);
   }
 
   Chats get chats => _app.chats;
