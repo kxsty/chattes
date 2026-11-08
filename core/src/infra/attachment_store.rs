@@ -20,9 +20,9 @@ impl AttachmentStore {
             .unwrap_or("")
             .to_owned();
 
-        let path = ensure_parents_exist(self.attachment_file_path(&chat_id, &id, &file_name))?;
+        let path = ensure_parents_exist(self.attachment_file_path(chat_id, id, &file_name))?;
 
-        let size = copy_file(&source, &path)?;
+        let size = copy_file(source, &path)?;
 
         let response = AttachmentModel {
             id,
@@ -44,7 +44,7 @@ impl AttachmentStore {
         })?)
     }
 
-    fn attachment_file_path(&self, chat_id: &Id, id: &Id, file_name: &str) -> PathBuf {
+    fn attachment_file_path(&self, chat_id: Id, id: Id, file_name: &str) -> PathBuf {
         const INNER_DIR: &str = "attachments";
 
         let chat_id = chat_id.to_string();

@@ -35,7 +35,7 @@ impl Messages {
 
     pub fn list(&self, request: ListMessages) -> Result<Vec<Message>> {
         let chat_id = Id::from_raw(request.chat_id);
-        let chat_exists = self.chat_store.exists(&chat_id)?;
+        let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
@@ -44,7 +44,7 @@ impl Messages {
 
         let messages = self
             .msg_store
-            .select(&chat_id, id, request.limit as usize, request.desc)?;
+            .select(chat_id, id, request.limit as usize, request.desc)?;
         let response = messages.into_iter().map(Message::from).collect();
 
         Ok(response)
@@ -52,14 +52,14 @@ impl Messages {
 
     pub fn get(&self, request: GetMessage) -> Result<Option<Message>> {
         let chat_id = Id::from_raw(request.chat_id);
-        let chat_exists = self.chat_store.exists(&chat_id)?;
+        let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
         let id = Id::from_raw(request.id);
 
-        let message = self.msg_store.find(&chat_id, &id)?;
+        let message = self.msg_store.find(chat_id, id)?;
         let response = message.map(Message::from);
 
         Ok(response)
@@ -67,7 +67,7 @@ impl Messages {
 
     pub fn post(&self, request: PostMessage) -> Result<Message> {
         let chat_id = Id::from_raw(request.chat_id);
-        let chat_exists = self.chat_store.exists(&chat_id)?;
+        let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
@@ -76,7 +76,7 @@ impl Messages {
 
         let mut attachemnts = Vec::with_capacity(request.attachments.len());
         // TODO: parallel execution
-        for post_attachment in request.attachments.into_iter() {
+        for post_attachment in request.attachments {
             let id = ID_GENERATOR.next_id(|_| thread::yield_now());
 
             let attachment =
@@ -87,13 +87,13 @@ impl Messages {
 
         let id = ID_GENERATOR.next_id(|_| thread::yield_now());
 
-        let mut message =
-            self.msg_store
-                .insert(&chat_id, id, sent_at, request.text, attachemnts)?;
+        let mut message = self
+            .msg_store
+            .insert(chat_id, id, sent_at, request.text, attachemnts)?;
 
         let chat = self
             .chat_store
-            .update(&chat_id, None, Some(Some(message)))?
+            .update(chat_id, None, Some(Some(message)))?
             .expect("Chat should exist");
 
         message = chat.last_message.expect("Last message should exist");
@@ -105,14 +105,14 @@ impl Messages {
 
     pub fn patch(&self, request: PatchMessage) -> Result<Message> {
         let chat_id = Id::from_raw(request.chat_id);
-        let chat_exists = self.chat_store.exists(&chat_id)?;
+        let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
         let id = Id::from_raw(request.id);
 
-        let message = self.msg_store.update(&chat_id, &id, request.text)?;
+        let message = self.msg_store.update(chat_id, id, request.text)?;
         let response = Message::from(message);
 
         Ok(response)
@@ -120,14 +120,14 @@ impl Messages {
 
     pub fn delete(&self, request: DeleteMessage) -> Result<bool> {
         let chat_id = Id::from_raw(request.chat_id);
-        let chat_exists = self.chat_store.exists(&chat_id)?;
+        let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
         let id = Id::from_raw(request.id);
 
-        let Some(message) = self.msg_store.delete(&chat_id, id)? else {
+        let Some(message) = self.msg_store.delete(chat_id, id)? else {
             return Ok(false);
         };
 

@@ -23,7 +23,7 @@ impl From<PersistError> for Error {
 }
 impl From<yaml_serde::Error> for Error {
     fn from(value: yaml_serde::Error) -> Self {
-        Self::Serialization(value.to_string().into())
+        Self::Serialization(value.to_string())
     }
 }
 impl error::Error for Error {}

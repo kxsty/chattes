@@ -2,8 +2,8 @@ use crate::domain::model::{AttachmentModel, Day, Id, MessageModel, Month, Timest
 use crate::infra::error::Error::NotFound;
 use crate::infra::error::Result;
 use crate::infra::fs_utils::{
-    deserialize_from_file, ensure_parents_exist, remove_parents_while, serialize_to_file,
-    DirEntryNames,
+    DirEntryNames, deserialize_from_file, ensure_parents_exist, remove_parents_while,
+    serialize_to_file,
 };
 use chrono::Utc;
 use cmp::Reverse;
@@ -26,7 +26,7 @@ impl MessageStore {
 
     pub fn select(
         &self,
-        chat_id: &Id,
+        chat_id: Id,
         id_cursor: Option<Id>,
         limit: usize,
         desc: bool,
@@ -38,8 +38,8 @@ impl MessageStore {
         }
     }
 
-    pub fn find(&self, chat_id: &Id, id: &Id) -> Result<Option<MessageModel>> {
-        let path = self.messages_fpath(&chat_id, &id);
+    pub fn find(&self, chat_id: Id, id: Id) -> Result<Option<MessageModel>> {
+        let path = self.messages_fpath(chat_id, id);
 
         let mut messages: Vec<MessageModel> = deserialize_from_file(&path)?.unwrap_or_default();
         let Ok(index) = messages.binary_search_by(|m| m.id.cmp(&id)) else {
@@ -51,13 +51,13 @@ impl MessageStore {
 
     pub fn insert(
         &self,
-        chat_id: &Id,
+        chat_id: Id,
         id: Id,
         sent_at: Timestamp,
         text: String,
         attachments: Vec<AttachmentModel>,
     ) -> Result<MessageModel> {
-        let path = ensure_parents_exist(self.messages_fpath(&chat_id, &id))?;
+        let path = ensure_parents_exist(self.messages_fpath(chat_id, id))?;
 
         let message = MessageModel {
             id,
@@ -73,7 +73,7 @@ impl MessageStore {
             deserialize_from_file(&path)?.unwrap_or_default();
 
         let existed = !messages.insert(message);
-        debug_assert_eq!(existed, false);
+        debug_assert!(!existed);
 
         serialize_to_file(&path, &messages)?;
 
@@ -82,8 +82,8 @@ impl MessageStore {
         Ok(message)
     }
 
-    pub fn update(&self, chat_id: &Id, id: &Id, text: Option<String>) -> Result<MessageModel> {
-        let path = ensure_parents_exist(self.messages_fpath(&chat_id, &id))?;
+    pub fn update(&self, chat_id: Id, id: Id, text: Option<String>) -> Result<MessageModel> {
+        let path = ensure_parents_exist(self.messages_fpath(chat_id, id))?;
 
         let _guard = self.mutex.lock();
 
@@ -95,11 +95,11 @@ impl MessageStore {
         let message = &mut messages[index];
 
         let mut updated = false;
-        if let Some(new_text) = text {
-            if message.text != new_text {
-                message.text = new_text;
-                updated = true;
-            }
+        if let Some(new_text) = text
+            && message.text != new_text
+        {
+            message.text = new_text;
+            updated = true;
         }
 
         message.updated_at = Timestamp::new(Utc::now());
@@ -111,8 +111,8 @@ impl MessageStore {
         Ok(messages.swap_remove(index))
     }
 
-    pub fn delete(&self, chat_id: &Id, id: Id) -> Result<Option<MessageModel>> {
-        let path = self.messages_fpath(&chat_id, &id);
+    pub fn delete(&self, chat_id: Id, id: Id) -> Result<Option<MessageModel>> {
+        let path = self.messages_fpath(chat_id, id);
         if !path.try_exists()? {
             return Ok(None);
         }
@@ -136,7 +136,7 @@ impl MessageStore {
 
     fn select_asc(
         &self,
-        chat_id: &Id,
+        chat_id: Id,
         id_cursor: Option<Id>,
         take: usize,
     ) -> Result<Vec<MessageModel>> {
@@ -146,7 +146,7 @@ impl MessageStore {
         }
 
         let id_cursor = id_cursor.unwrap_or_else(|| Id::from_raw(u64::MIN));
-        let date_cursor = Timestamp::from(&id_cursor);
+        let date_cursor = Timestamp::from(id_cursor);
 
         let mut path = self.chats_path.join(chat_id.to_string());
 
@@ -162,7 +162,7 @@ impl MessageStore {
         }
         years.sort_unstable();
 
-        for year in years.into_iter() {
+        for year in years {
             if year < date_cursor.year() {
                 continue;
             }
@@ -175,7 +175,7 @@ impl MessageStore {
             }
             months.sort_unstable();
 
-            for month in months.iter() {
+            for month in &months {
                 if year == date_cursor.year() && *month < date_cursor.month() {
                     continue;
                 }
@@ -188,7 +188,7 @@ impl MessageStore {
                 }
                 days.sort_unstable();
 
-                for day in days.iter() {
+                for day in &days {
                     if year == date_cursor.year()
                         && *month == date_cursor.month()
                         && *day < date_cursor.day()
@@ -202,7 +202,7 @@ impl MessageStore {
                         deserialize_from_file(&path)?.unwrap_or_default();
                     debug_assert!(messages.is_sorted());
 
-                    for message in messages.into_iter() {
+                    for message in messages {
                         if message.id <= id_cursor {
                             continue;
                         }
@@ -228,7 +228,7 @@ impl MessageStore {
 
     fn select_desc(
         &self,
-        chat_id: &Id,
+        chat_id: Id,
         id_cursor: Option<Id>,
         take: usize,
     ) -> Result<Vec<MessageModel>> {
@@ -238,7 +238,7 @@ impl MessageStore {
         }
 
         let id_cursor = id_cursor.unwrap_or_else(|| Id::from_raw(u64::MAX));
-        let date_cursor = Timestamp::from(&id_cursor);
+        let date_cursor = Timestamp::from(id_cursor);
 
         let mut path = self.chats_path.join(chat_id.to_string());
 
@@ -254,7 +254,7 @@ impl MessageStore {
         }
         years.sort_unstable_by_key(|&y| Reverse(y));
 
-        for year in years.into_iter() {
+        for year in years {
             if year > date_cursor.year() {
                 continue;
             }
@@ -267,7 +267,7 @@ impl MessageStore {
             }
             months.sort_unstable_by_key(|&m| Reverse(m));
 
-            for month in months.iter() {
+            for month in &months {
                 if year == date_cursor.year() && *month > date_cursor.month() {
                     continue;
                 }
@@ -280,7 +280,7 @@ impl MessageStore {
                 }
                 days.sort_unstable_by_key(|&d| Reverse(d));
 
-                for day in days.iter() {
+                for day in &days {
                     if year == date_cursor.year()
                         && *month == date_cursor.month()
                         && *day > date_cursor.day()
@@ -318,7 +318,7 @@ impl MessageStore {
         Ok(result)
     }
 
-    fn messages_fpath(&self, chat_id: &Id, id: &Id) -> PathBuf {
+    fn messages_fpath(&self, chat_id: Id, id: Id) -> PathBuf {
         let chat_id = chat_id.to_string();
         let sent_at = Timestamp::from(id);
 
@@ -355,6 +355,6 @@ impl MessageStore {
     }
 
     fn messages_fname(year: Year, month: Month, day: Day) -> String {
-        format!("{}-{}-{}.yaml", year, month, day)
+        format!("{year}-{month}-{day}.yaml")
     }
 }

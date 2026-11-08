@@ -1,6 +1,6 @@
 use crate::infra::error::Result;
-use serde::de::DeserializeOwned;
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 use std::fs::{File, OpenOptions, ReadDir};
 use std::io::{BufReader, BufWriter, Write};
 use std::marker::PhantomData;
@@ -24,7 +24,7 @@ impl<T: FromStr> DirEntryNames<T> {
 impl<T: FromStr> Iterator for DirEntryNames<T> {
     type Item = io::Result<T>;
     fn next(&mut self) -> Option<Self::Item> {
-        while let Some(entry_res) = self.dir.next() {
+        for entry_res in self.dir.by_ref() {
             let entry = match entry_res {
                 Ok(entry) => entry,
                 Err(err) => return Some(Err(err)),
@@ -114,7 +114,7 @@ pub(crate) fn remove_parents_while<P: AsRef<Path>, W: Fn(&Path) -> bool>(
                 Ok(()) => removed_any = true,
                 Err(e) if e.kind() == io::ErrorKind::NotFound => break,
                 Err(e) => return Err(e),
-            };
+            }
         } else {
             break;
         }

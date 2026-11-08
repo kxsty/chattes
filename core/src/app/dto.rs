@@ -48,6 +48,7 @@ impl From<model::ChatModel> for Chat {
 }
 
 #[frb(type_64bit_int)]
+#[derive(Clone, Copy)]
 pub struct ListChats {
     pub last_message_id_cursor: Option<u64>,
     pub limit: u32,
@@ -55,6 +56,7 @@ pub struct ListChats {
 }
 
 #[frb(type_64bit_int)]
+#[derive(Clone, Copy)]
 pub struct GetChat {
     pub id: u64,
 }
@@ -70,6 +72,7 @@ pub struct PatchChat {
 }
 
 #[frb(type_64bit_int)]
+#[derive(Clone, Copy)]
 pub struct DeleteChat {
     pub id: u64,
 }
@@ -102,6 +105,7 @@ impl From<model::MessageModel> for Message {
 }
 
 #[frb(type_64bit_int)]
+#[derive(Clone, Copy)]
 pub struct ListMessages {
     pub chat_id: u64,
     pub id_cursor: Option<u64>,
@@ -110,6 +114,7 @@ pub struct ListMessages {
 }
 
 #[frb(type_64bit_int)]
+#[derive(Clone, Copy)]
 pub struct GetMessage {
     pub chat_id: u64,
     pub id: u64,
@@ -130,6 +135,7 @@ pub struct PatchMessage {
 }
 
 #[frb(type_64bit_int)]
+#[derive(Clone, Copy)]
 pub struct DeleteMessage {
     pub chat_id: u64,
     pub id: u64,

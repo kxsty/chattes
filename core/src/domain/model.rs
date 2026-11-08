@@ -60,9 +60,10 @@ impl Ord for MessageModel {
         self.id.cmp(&other.id)
     }
 }
+#[allow(clippy::non_canonical_partial_ord_impl)]
 impl PartialOrd for MessageModel {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.id.partial_cmp(&other.id)
+        Some(self.id.cmp(&other.id))
     }
 }
 impl Eq for MessageModel {}
@@ -100,12 +101,15 @@ impl Timestamp {
         Self(date_time)
     }
     pub fn year(&self) -> Year {
+        #[allow(clippy::cast_possible_truncation)]
         Year::new(self.0.year() as i16)
     }
     pub fn month(&self) -> Month {
+        #[allow(clippy::cast_possible_truncation)]
         Month::new(self.0.month() as i8).expect("Datetime supposed to have a valid month")
     }
     pub fn day(&self) -> Day {
+        #[allow(clippy::cast_possible_truncation)]
         Day::new(self.0.day() as i8).expect("Datetime supposed to have a valid day")
     }
 }
@@ -124,10 +128,11 @@ impl From<Timestamp> for SystemTime {
         value.0.into()
     }
 }
-impl From<&Id> for Timestamp {
-    fn from(value: &Id) -> Self {
-        let timestamp = value.timestamp() + DISCORD_EPOCH.as_millis() as u64;
-        Self::new(DateTime::<Utc>::from_timestamp_millis(timestamp as i64).unwrap())
+impl From<Id> for Timestamp {
+    fn from(value: Id) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
+        let timestamp = value.timestamp().cast_signed() + DISCORD_EPOCH.as_millis() as i64;
+        Self::new(DateTime::<Utc>::from_timestamp_millis(timestamp).unwrap())
     }
 }
 
@@ -137,7 +142,7 @@ impl Year {
     const fn new(year: i16) -> Self {
         Self(year)
     }
-    const fn is_leap(&self) -> bool {
+    const fn is_leap(self) -> bool {
         (self.0 % 4 == 0 && self.0 % 100 != 0) || self.0 % 400 == 0
     }
 }
@@ -209,10 +214,10 @@ impl Day {
             => 30,
 
             2 // February
-            => if !year.is_leap() {
-                28
-            } else {
+            => if year.is_leap() {
                 29
+            } else {
+                28
             },
 
             _ => unreachable!(),

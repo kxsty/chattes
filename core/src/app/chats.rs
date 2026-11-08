@@ -1,7 +1,7 @@
+use crate::app::ID_GENERATOR;
 use crate::app::dto::{Chat, DeleteChat, GetChat, ListChats, PatchChat, PostChat};
 use crate::app::error::Error::Validation;
 use crate::app::error::Result;
-use crate::app::ID_GENERATOR;
 use crate::domain::model::Id;
 use crate::infra::chat_store::ChatStore;
 use std::sync::Arc;
@@ -31,7 +31,7 @@ impl Chats {
     pub fn get(&self, request: GetChat) -> Result<Option<Chat>> {
         let id = Id::from_raw(request.id);
 
-        let chat = self.chat_store.find(&id)?;
+        let chat = self.chat_store.find(id)?;
         let response = chat.map(Chat::from);
 
         Ok(response)
@@ -55,7 +55,7 @@ impl Chats {
     pub fn patch(&self, request: PatchChat) -> Result<Option<Chat>> {
         let id = Id::from_raw(request.id);
 
-        let chat = self.chat_store.update(&id, request.name, None)?;
+        let chat = self.chat_store.update(id, request.name, None)?;
         let response = chat.map(Chat::from);
 
         Ok(response)
@@ -64,7 +64,7 @@ impl Chats {
     pub fn delete(&self, request: DeleteChat) -> Result<bool> {
         let id = Id::from_raw(request.id);
 
-        let response = self.chat_store.delete(&id)?;
+        let response = self.chat_store.delete(id)?;
 
         Ok(response)
     }

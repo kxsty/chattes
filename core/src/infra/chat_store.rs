@@ -1,17 +1,17 @@
 use crate::domain::model::{ChatModel, Id, MessageModel};
 use crate::infra::error::Result;
 use crate::infra::fs_utils::{
-    deserialize_from_file, ensure_parents_exist, serialize_to_file, DirEntryNames,
+    DirEntryNames, deserialize_from_file, ensure_parents_exist, serialize_to_file,
 };
 use std::cmp::Ordering;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub struct ChatStore {
     path: PathBuf,
 }
 impl ChatStore {
-    pub fn new(app_path: PathBuf) -> Result<Self> {
+    pub fn new(app_path: &Path) -> Result<Self> {
         let path = app_path.join("chats");
         fs::create_dir_all(&path)?;
 
@@ -43,7 +43,7 @@ impl ChatStore {
         for id in DirEntryNames::<Id>::new(&self.path)? {
             let id = id?;
 
-            let Some(chat) = self.find(&id)? else {
+            let Some(chat) = self.find(id)? else {
                 continue;
             };
 
@@ -60,7 +60,7 @@ impl ChatStore {
         if desc {
             chats.sort_unstable_by(|a, b| b.cmp(a));
         } else {
-            chats.sort_unstable_by(|a, b| a.cmp(b));
+            chats.sort_unstable();
         }
 
         chats.truncate(limit);
@@ -68,7 +68,7 @@ impl ChatStore {
         Ok(chats)
     }
 
-    pub fn find(&self, id: &Id) -> Result<Option<ChatModel>> {
+    pub fn find(&self, id: Id) -> Result<Option<ChatModel>> {
         let path = self.chat_fpath(id);
 
         deserialize_from_file(path)
@@ -80,7 +80,7 @@ impl ChatStore {
         name: String,
         last_message: Option<MessageModel>,
     ) -> Result<ChatModel> {
-        let path = ensure_parents_exist(self.chat_fpath(&id))?;
+        let path = ensure_parents_exist(self.chat_fpath(id))?;
 
         let chat = ChatModel {
             id,
@@ -93,9 +93,10 @@ impl ChatStore {
         Ok(chat)
     }
 
+    #[allow(clippy::option_option)]
     pub fn update(
         &self,
-        id: &Id,
+        id: Id,
         name: Option<String>,
         last_message: Option<Option<MessageModel>>,
     ) -> Result<Option<ChatModel>> {
@@ -106,18 +107,18 @@ impl ChatStore {
         };
 
         let mut updated = false;
-        if let Some(name) = name {
-            if name != chat.name {
-                chat.name = name;
-                updated = true;
-            }
+        if let Some(name) = name
+            && name != chat.name
+        {
+            chat.name = name;
+            updated = true;
         }
 
-        if let Some(last_message) = last_message {
-            if chat.last_message != last_message {
-                chat.last_message = last_message;
-                updated = true;
-            }
+        if let Some(last_message) = last_message
+            && chat.last_message != last_message
+        {
+            chat.last_message = last_message;
+            updated = true;
         }
 
         if updated {
@@ -127,11 +128,11 @@ impl ChatStore {
         Ok(Some(chat))
     }
 
-    pub fn delete(&self, id: &Id) -> Result<bool> {
+    pub fn delete(&self, id: Id) -> Result<bool> {
         let path = self.chat_fpath(id);
         if !path.try_exists()? {
             return Ok(false);
-        };
+        }
 
         if let Some(parent) = path.parent() {
             fs::remove_dir_all(parent)?;
@@ -140,11 +141,11 @@ impl ChatStore {
         Ok(true)
     }
 
-    pub fn exists(&self, id: &Id) -> Result<bool> {
+    pub fn exists(&self, id: Id) -> Result<bool> {
         Ok(self.chat_fpath(id).try_exists()?)
     }
 
-    fn chat_fpath(&self, id: &Id) -> PathBuf {
+    fn chat_fpath(&self, id: Id) -> PathBuf {
         self.path.join(id.to_string()).join("data.yaml")
     }
 }

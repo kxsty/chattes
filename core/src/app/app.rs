@@ -13,6 +13,7 @@ pub struct App {
 }
 
 impl App {
+    #[must_use]
     pub fn new() -> Self {
         let data_dir = dirs::data_dir().expect("No data directory");
         Self::new_in_dir(&data_dir)
@@ -22,8 +23,7 @@ impl App {
         let app_dir = dir.join("Chattes");
         fs::create_dir_all(&app_dir).expect("Failed to create app data directory");
 
-        let chat_store =
-            Arc::new(ChatStore::new(app_dir.clone()).expect("Failed to create chat store"));
+        let chat_store = Arc::new(ChatStore::new(&app_dir).expect("Failed to create chat store"));
         let chats_path = app_dir.join("chats");
 
         let msg_store = Arc::new(MessageStore::new(chats_path.clone()));
@@ -36,6 +36,12 @@ impl App {
     }
 }
 
+impl Default for App {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -44,13 +50,13 @@ mod test {
 
     #[test]
     fn chats_list_correct_order() {
-        const COUNT: usize = 100;
+        const COUNT: u32 = 100;
 
         let temp_dir = TempDir::new().unwrap();
 
         let app = App::new_in_dir(temp_dir.path());
 
-        let mut chat_list = Vec::with_capacity(COUNT);
+        let mut chat_list = Vec::with_capacity(COUNT as usize);
         for i in 0..COUNT {
             let mut chat = app
                 .chats
@@ -63,8 +69,8 @@ mod test {
                 app.messages
                     .post(PostMessage {
                         chat_id: chat.id,
-                        text: Default::default(),
-                        attachments: Default::default(),
+                        text: String::default(),
+                        attachments: Vec::default(),
                     })
                     .unwrap(),
             );
@@ -76,7 +82,7 @@ mod test {
             .chats
             .list(ListChats {
                 last_message_id_cursor: None,
-                limit: COUNT as u32,
+                limit: COUNT,
                 desc: false,
             })
             .unwrap();
@@ -90,7 +96,7 @@ mod test {
             .chats
             .list(ListChats {
                 last_message_id_cursor: None,
-                limit: COUNT as u32,
+                limit: COUNT,
                 desc: true,
             })
             .unwrap();
@@ -103,7 +109,7 @@ mod test {
 
     #[test]
     fn messages_list_correct_order() {
-        const COUNT: usize = 100;
+        const COUNT: u32 = 100;
 
         let temp_dir = TempDir::new().unwrap();
 
@@ -116,14 +122,14 @@ mod test {
             })
             .unwrap();
 
-        let mut msg_list = Vec::with_capacity(COUNT);
+        let mut msg_list = Vec::with_capacity(COUNT as usize);
         for _ in 0..COUNT {
             msg_list.push(
                 app.messages
                     .post(PostMessage {
                         chat_id: chat.id,
-                        text: Default::default(),
-                        attachments: Default::default(),
+                        text: String::default(),
+                        attachments: Vec::default(),
                     })
                     .unwrap(),
             );
@@ -134,7 +140,7 @@ mod test {
             .list(ListMessages {
                 chat_id: chat.id,
                 id_cursor: None,
-                limit: COUNT as u32,
+                limit: COUNT,
                 desc: false,
             })
             .unwrap();
@@ -149,7 +155,7 @@ mod test {
             .list(ListMessages {
                 chat_id: chat.id,
                 id_cursor: None,
-                limit: COUNT as u32,
+                limit: COUNT,
                 desc: true,
             })
             .unwrap();
