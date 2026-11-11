@@ -1,44 +1,44 @@
-use crate::domain;
 use chrono::{DateTime, Utc};
-use domain::model;
 use flutter_rust_bridge::frb;
+
+use crate::domain::{attachment::AttachmentModel, chat::ChatModel, message::MessageModel};
 
 #[frb(type_64bit_int)]
 #[frb(dart_code = "
-    int compareTo(Chat other) {
-        if (lastMessage == null && other.lastMessage == null) {
-            return 0;
-        }
-        if (lastMessage == null) {
-            return 1;
-        }
-        if (other.lastMessage == null) {
-            return -1;
-        }
-
-        final lastMessageCmp = lastMessage!.compareTo(other.lastMessage!);
-        if (lastMessageCmp != 0) {
-            return lastMessageCmp;
-        }
-
-        return id.compareTo(other.id);
+int compareTo(Chat other) {
+    if (lastMessage == null && other.lastMessage == null) {
+        return 0;
+    }
+    if (lastMessage == null) {
+        return 1;
+    }
+    if (other.lastMessage == null) {
+        return -1;
     }
 
-    Chat copyWith({int? id, String? name, Message? lastMessage}) {
-        return Chat(
-            id: id ?? this.id,
-            name: name ?? this.name,
-            lastMessage: lastMessage ?? this.lastMessage,
-        );
+    final lastMessageCmp = lastMessage!.compareTo(other.lastMessage!);
+    if (lastMessageCmp != 0) {
+        return lastMessageCmp;
     }
+
+    return id.compareTo(other.id);
+}
+
+Chat copyWith({int? id, String? name, Message? lastMessage}) {
+    return Chat(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        lastMessage: lastMessage ?? this.lastMessage,
+    );
+}
 ")]
 pub struct Chat {
     pub id: u64,
     pub name: String,
     pub last_message: Option<Message>,
 }
-impl From<model::ChatModel> for Chat {
-    fn from(value: model::ChatModel) -> Self {
+impl From<ChatModel> for Chat {
+    fn from(value: ChatModel) -> Self {
         Self {
             id: value.id.to_raw(),
             name: value.name,
@@ -57,16 +57,16 @@ pub struct ListChats {
 
 #[frb(type_64bit_int)]
 #[derive(Clone, Copy)]
-pub struct GetChat {
+pub struct ReadChat {
     pub id: u64,
 }
 
-pub struct PostChat {
+pub struct CreateChat {
     pub name: String,
 }
 
 #[frb(type_64bit_int)]
-pub struct PatchChat {
+pub struct UpdateChat {
     pub id: u64,
     pub name: Option<String>,
 }
@@ -79,9 +79,9 @@ pub struct DeleteChat {
 
 #[frb(type_64bit_int)]
 #[frb(dart_code = "
-    int compareTo(Message other) {
-        return id.compareTo(other.id);
-    }
+int compareTo(Message other) {
+    return id.compareTo(other.id);
+}
 ")]
 pub struct Message {
     pub id: u64,
@@ -89,8 +89,8 @@ pub struct Message {
     pub text: String,
     pub attachments: Vec<Attachment>,
 }
-impl From<model::MessageModel> for Message {
-    fn from(value: model::MessageModel) -> Self {
+impl From<MessageModel> for Message {
+    fn from(value: MessageModel) -> Self {
         Self {
             id: value.id.to_raw(),
             sent_at: value.sent_at.into(),
@@ -115,20 +115,20 @@ pub struct ListMessages {
 
 #[frb(type_64bit_int)]
 #[derive(Clone, Copy)]
-pub struct GetMessage {
+pub struct ReadMessage {
     pub chat_id: u64,
     pub id: u64,
 }
 
 #[frb(type_64bit_int)]
-pub struct PostMessage {
+pub struct CreateMessage {
     pub chat_id: u64,
     pub text: String,
-    pub attachments: Vec<PostAttachment>,
+    pub attachments: Vec<CreateAttachment>,
 }
 
 #[frb(type_64bit_int)]
-pub struct PatchMessage {
+pub struct UpdateMessage {
     pub chat_id: u64,
     pub id: u64,
     pub text: Option<String>,
@@ -145,8 +145,8 @@ pub struct Attachment {
     pub path: String,
     pub file_name: String,
 }
-impl From<model::AttachmentModel> for Attachment {
-    fn from(value: model::AttachmentModel) -> Self {
+impl From<AttachmentModel> for Attachment {
+    fn from(value: AttachmentModel) -> Self {
         Self {
             path: value.path.to_str().unwrap_or("").to_owned(),
             file_name: value.file_name,
@@ -154,7 +154,7 @@ impl From<model::AttachmentModel> for Attachment {
     }
 }
 
-pub struct PostAttachment {
+pub struct CreateAttachment {
     pub path: String,
 }
 

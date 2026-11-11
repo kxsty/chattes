@@ -1,11 +1,14 @@
-use crate::domain::model::{ChatModel, Id, MessageModel};
+use std::cmp::Ordering;
+use std::fs;
+use std::path::{Path, PathBuf};
+
+use crate::domain::Id;
+use crate::domain::chat::ChatModel;
+use crate::domain::message::MessageModel;
 use crate::infra::error::Result;
 use crate::infra::fs_utils::{
     DirEntryNames, deserialize_from_file, ensure_parents_exist, serialize_to_file,
 };
-use std::cmp::Ordering;
-use std::fs;
-use std::path::{Path, PathBuf};
 
 pub struct ChatStore {
     path: PathBuf,

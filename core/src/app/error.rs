@@ -1,9 +1,10 @@
+use std::fmt::{Debug, Display, Formatter};
+use std::{error, io, result};
+
 use flutter_rust_bridge::frb;
 
 use crate::domain::error::ValidationError;
 use crate::infra;
-use std::fmt::{Debug, Display, Formatter};
-use std::{error, io, result};
 
 pub type Result<T> = result::Result<T, Error>;
 

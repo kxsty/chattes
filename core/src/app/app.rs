@@ -1,11 +1,12 @@
+use std::fs;
+use std::path::Path;
+use std::sync::Arc;
+
 use crate::app::chats::Chats;
 use crate::app::messages::Messages;
 use crate::infra::attachment_store::AttachmentStore;
 use crate::infra::chat_store::ChatStore;
 use crate::infra::message_store::MessageStore;
-use std::fs;
-use std::path::Path;
-use std::sync::Arc;
 
 pub struct App {
     pub chats: Chats,
@@ -36,7 +37,7 @@ impl App {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::app::dto::{ListChats, ListMessages, PostChat, PostMessage};
+    use crate::app::dto::{CreateChat, CreateMessage, ListChats, ListMessages};
     use tempfile::TempDir;
 
     #[test]
@@ -51,14 +52,14 @@ mod test {
         for i in 0..COUNT {
             let mut chat = app
                 .chats
-                .post(PostChat {
+                .create(CreateChat {
                     name: i.to_string(),
                 })
                 .unwrap();
 
             chat.last_message = Some(
                 app.messages
-                    .post(PostMessage {
+                    .create(CreateMessage {
                         chat_id: chat.id,
                         text: String::default(),
                         attachments: Vec::default(),
@@ -108,7 +109,7 @@ mod test {
 
         let chat = app
             .chats
-            .post(PostChat {
+            .create(CreateChat {
                 name: "messages_list_correct_order".to_string(),
             })
             .unwrap();
@@ -117,7 +118,7 @@ mod test {
         for _ in 0..COUNT {
             msg_list.push(
                 app.messages
-                    .post(PostMessage {
+                    .create(CreateMessage {
                         chat_id: chat.id,
                         text: String::default(),
                         attachments: Vec::default(),

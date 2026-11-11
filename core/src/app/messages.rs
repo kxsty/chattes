@@ -1,17 +1,20 @@
-use crate::app::ID_GENERATOR;
-use crate::app::dto::{
-    DeleteMessage, GetMessage, ListMessages, Message, PatchMessage, PostMessage,
-};
-use crate::app::error::Error::Validation;
-use crate::app::error::Result;
-use crate::domain::model::{Id, Timestamp};
-use crate::infra::attachment_store::AttachmentStore;
-use crate::infra::chat_store::ChatStore;
-use crate::infra::message_store::MessageStore;
-use chrono::Utc;
 use std::path::Path;
 use std::sync::Arc;
 use std::thread;
+
+use chrono::Utc;
+
+use crate::app::ID_GENERATOR;
+use crate::app::dto::{
+    CreateMessage, DeleteMessage, ListMessages, Message, ReadMessage, UpdateMessage,
+};
+use crate::app::error::Error::Validation;
+use crate::app::error::Result;
+use crate::domain::Id;
+use crate::domain::datetime::Timestamp;
+use crate::infra::attachment_store::AttachmentStore;
+use crate::infra::chat_store::ChatStore;
+use crate::infra::message_store::MessageStore;
 
 #[derive(Clone)]
 pub struct Messages {
@@ -50,7 +53,7 @@ impl Messages {
         Ok(response)
     }
 
-    pub fn get(&self, request: GetMessage) -> Result<Option<Message>> {
+    pub fn read(&self, request: ReadMessage) -> Result<Option<Message>> {
         let chat_id = Id::from_raw(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
@@ -65,7 +68,7 @@ impl Messages {
         Ok(response)
     }
 
-    pub fn post(&self, request: PostMessage) -> Result<Message> {
+    pub fn create(&self, request: CreateMessage) -> Result<Message> {
         let chat_id = Id::from_raw(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
@@ -76,12 +79,12 @@ impl Messages {
 
         let mut attachemnts = Vec::with_capacity(request.attachments.len());
         // TODO: parallel execution
-        for post_attachment in request.attachments {
+        for attachments in request.attachments {
             let id = ID_GENERATOR.next_id(|_| thread::yield_now());
 
-            let attachment =
-                self.att_store
-                    .insert(chat_id, id, Path::new(&post_attachment.path))?;
+            let attachment = self
+                .att_store
+                .insert(chat_id, id, Path::new(&attachments.path))?;
             attachemnts.push(attachment);
         }
 
@@ -103,7 +106,7 @@ impl Messages {
         Ok(response)
     }
 
-    pub fn patch(&self, request: PatchMessage) -> Result<Message> {
+    pub fn update(&self, request: UpdateMessage) -> Result<Message> {
         let chat_id = Id::from_raw(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {

@@ -1,13 +1,15 @@
-use crate::infra::error::Result;
-use serde::Serialize;
-use serde::de::DeserializeOwned;
 use std::fs::{File, OpenOptions, ReadDir};
 use std::io::{BufReader, BufWriter, Write};
 use std::marker::PhantomData;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::{fs, io};
+
+use serde::Serialize;
+use serde::de::DeserializeOwned;
 use tempfile::NamedTempFile;
+
+use crate::infra::error::Result;
 
 pub(crate) struct DirEntryNames<T: FromStr> {
     dir: ReadDir,

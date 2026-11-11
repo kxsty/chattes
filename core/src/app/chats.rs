@@ -1,11 +1,12 @@
-use crate::app::ID_GENERATOR;
-use crate::app::dto::{Chat, DeleteChat, GetChat, ListChats, PatchChat, PostChat};
-use crate::app::error::Error::Validation;
-use crate::app::error::Result;
-use crate::domain::model::Id;
-use crate::infra::chat_store::ChatStore;
 use std::sync::Arc;
 use std::thread;
+
+use crate::app::ID_GENERATOR;
+use crate::app::dto::{Chat, CreateChat, DeleteChat, ListChats, ReadChat, UpdateChat};
+use crate::app::error::Error::Validation;
+use crate::app::error::Result;
+use crate::domain::Id;
+use crate::infra::chat_store::ChatStore;
 
 #[derive(Clone)]
 pub struct Chats {
@@ -28,7 +29,7 @@ impl Chats {
         Ok(response)
     }
 
-    pub fn get(&self, request: GetChat) -> Result<Option<Chat>> {
+    pub fn read(&self, request: ReadChat) -> Result<Option<Chat>> {
         let id = Id::from_raw(request.id);
 
         let chat = self.chat_store.find(id)?;
@@ -37,7 +38,7 @@ impl Chats {
         Ok(response)
     }
 
-    pub fn post(&self, request: PostChat) -> Result<Chat> {
+    pub fn create(&self, request: CreateChat) -> Result<Chat> {
         let id = ID_GENERATOR.next_id(|_| {
             thread::yield_now();
         });
@@ -52,7 +53,7 @@ impl Chats {
         Ok(response)
     }
 
-    pub fn patch(&self, request: PatchChat) -> Result<Option<Chat>> {
+    pub fn update(&self, request: UpdateChat) -> Result<Option<Chat>> {
         let id = Id::from_raw(request.id);
 
         let chat = self.chat_store.update(id, request.name, None)?;

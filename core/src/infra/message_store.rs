@@ -1,16 +1,20 @@
-use crate::domain::model::{AttachmentModel, Day, Id, MessageModel, Month, Timestamp, Year};
+use std::cmp::Reverse;
+use std::collections::BTreeSet;
+use std::path::PathBuf;
+use std::sync::Mutex;
+
+use chrono::Utc;
+
+use crate::domain::Id;
+use crate::domain::attachment::AttachmentModel;
+use crate::domain::datetime::{Day, Month, Timestamp, Year};
+use crate::domain::message::MessageModel;
 use crate::infra::error::Error::NotFound;
 use crate::infra::error::Result;
 use crate::infra::fs_utils::{
     DirEntryNames, deserialize_from_file, ensure_parents_exist, remove_parents_while,
     serialize_to_file,
 };
-use chrono::Utc;
-use cmp::Reverse;
-use std::cmp;
-use std::collections::BTreeSet;
-use std::path::PathBuf;
-use std::sync::Mutex;
 
 pub struct MessageStore {
     chats_path: PathBuf,

@@ -1,6 +1,7 @@
 use std::fmt::{Debug, Display, Formatter};
 use std::result;
 use std::{error, io};
+
 use tempfile::PersistError;
 
 pub type Result<T> = result::Result<T, Error>;

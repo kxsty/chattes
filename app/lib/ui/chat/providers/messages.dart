@@ -74,12 +74,12 @@ class MessagesNotifier extends AsyncNotifier<MessagesState> {
       return false;
     }
 
-    final message = await Api().messages.post(
+    final message = await Api().messages.create(
       request: .new(
         chatId: chatId,
         text: body.text,
         attachments: body.attachments
-            .map((p) => PostAttachment(path: p))
+            .map((p) => CreateAttachment(path: p))
             .toList(),
       ),
     );
