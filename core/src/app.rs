@@ -10,7 +10,7 @@ pub mod dto;
 pub mod error;
 pub mod messages;
 
-pub static ID_GENERATOR: LazyLock<AtomicSnowflakeGenerator<SnowflakeDiscordId, MonotonicClock>> =
+static ID_GENERATOR: LazyLock<AtomicSnowflakeGenerator<SnowflakeDiscordId, MonotonicClock>> =
     LazyLock::new(|| {
         AtomicSnowflakeGenerator::new(0, MonotonicClock::<1>::with_epoch(DISCORD_EPOCH))
     });
