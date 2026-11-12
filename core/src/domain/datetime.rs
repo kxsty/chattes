@@ -57,7 +57,9 @@ impl From<Id> for Timestamp {
     fn from(value: Id) -> Self {
         #[allow(clippy::cast_possible_truncation)]
         let timestamp = value.timestamp().cast_signed() + DISCORD_EPOCH.as_millis() as i64;
-        Self::new(DateTime::<Utc>::from_timestamp_millis(timestamp).unwrap())
+        let date_time = DateTime::<Utc>::from_timestamp_millis(timestamp)
+            .expect("Timestamp should be in DateTime range");
+        Self::new(date_time)
     }
 }
 

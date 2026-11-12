@@ -3,6 +3,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use crate::app::chats::Chats;
+use crate::app::error::Result;
 use crate::app::messages::Messages;
 use crate::infra::attachment_store::AttachmentStore;
 use crate::infra::chat_store::ChatStore;
@@ -14,14 +15,13 @@ pub struct App {
 }
 
 impl App {
-    #[must_use]
-    pub fn new(dir: &str) -> Self {
+    pub fn new(dir: &str) -> Result<Self> {
         let dir = Path::new(dir);
 
         let app_dir = dir.join("Chattes");
-        fs::create_dir_all(&app_dir).expect("Failed to create app data directory");
+        fs::create_dir_all(&app_dir)?;
 
-        let chat_store = Arc::new(ChatStore::new(&app_dir).expect("Failed to create chat store"));
+        let chat_store = Arc::new(ChatStore::new(&app_dir)?);
         let chats_path = app_dir.join("chats");
 
         let msg_store = Arc::new(MessageStore::new(chats_path.clone()));
@@ -30,7 +30,7 @@ impl App {
         let chats = Chats::new(chat_store.clone());
         let messages = Messages::new(chat_store.clone(), msg_store.clone(), att_store.clone());
 
-        Self { chats, messages }
+        Ok(Self { chats, messages })
     }
 }
 
@@ -46,7 +46,7 @@ mod test {
 
         let temp_dir = TempDir::new().unwrap();
 
-        let app = App::new(temp_dir.path().to_str().unwrap_or_default());
+        let app = App::new(temp_dir.path().to_str().unwrap_or_default()).unwrap();
 
         let mut chat_list = Vec::with_capacity(COUNT as usize);
         for i in 0..COUNT {
@@ -105,7 +105,7 @@ mod test {
 
         let temp_dir = TempDir::new().unwrap();
 
-        let app = App::new(temp_dir.path().to_str().unwrap_or_default());
+        let app = App::new(temp_dir.path().to_str().unwrap_or_default()).unwrap();
 
         let chat = app
             .chats
