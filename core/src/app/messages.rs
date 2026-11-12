@@ -75,7 +75,7 @@ impl Messages {
             return Err(Validation("Chat not found".into()));
         }
 
-        let sent_at = Timestamp::new(Utc::now());
+        let created_at = Timestamp::new(Utc::now());
 
         let mut attachemnts = Vec::with_capacity(request.attachments.len());
         // TODO: parallel execution
@@ -90,9 +90,9 @@ impl Messages {
 
         let id = ID_GENERATOR.next_id(|_| thread::yield_now());
 
-        let mut message = self
-            .msg_store
-            .insert(chat_id, id, sent_at, request.text, attachemnts)?;
+        let mut message =
+            self.msg_store
+                .insert(chat_id, id, created_at, request.text, attachemnts)?;
 
         let chat = self
             .chat_store

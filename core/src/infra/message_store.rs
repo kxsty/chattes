@@ -57,7 +57,7 @@ impl MessageStore {
         &self,
         chat_id: Id,
         id: Id,
-        sent_at: Timestamp,
+        created_at: Timestamp,
         text: String,
         attachments: Vec<AttachmentModel>,
     ) -> Result<MessageModel> {
@@ -67,8 +67,8 @@ impl MessageStore {
             id,
             text,
             attachments,
-            sent_at: sent_at.clone(),
-            updated_at: sent_at,
+            created_at: created_at.clone(),
+            updated_at: created_at,
         };
 
         let _guard = self.mutex.lock();
@@ -324,11 +324,11 @@ impl MessageStore {
 
     fn messages_fpath(&self, chat_id: Id, id: Id) -> PathBuf {
         let chat_id = chat_id.to_string();
-        let sent_at = Timestamp::from(id);
+        let created_at = Timestamp::from(id);
 
-        let year = sent_at.year();
-        let month = sent_at.month();
-        let day = sent_at.day();
+        let year = created_at.year();
+        let month = created_at.month();
+        let day = created_at.day();
 
         let file_name = Self::messages_fname(year, month, day);
 

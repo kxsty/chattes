@@ -15,7 +15,7 @@ pub struct ChatModel {
 
 impl PartialEq for ChatModel {
     fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
+        self.id.eq(&other.id)
     }
 }
 

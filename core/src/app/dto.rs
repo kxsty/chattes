@@ -85,7 +85,7 @@ int compareTo(Message other) {
 ")]
 pub struct Message {
     pub id: u64,
-    pub sent_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
     pub text: String,
     pub attachments: Vec<Attachment>,
 }
@@ -93,7 +93,7 @@ impl From<MessageModel> for Message {
     fn from(value: MessageModel) -> Self {
         Self {
             id: value.id.to_raw(),
-            sent_at: value.sent_at.into(),
+            created_at: value.created_at.into(),
             text: value.text,
             attachments: value
                 .attachments

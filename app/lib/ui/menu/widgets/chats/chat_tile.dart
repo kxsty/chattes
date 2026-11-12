@@ -66,7 +66,7 @@ class _ChatTileTitle extends StatelessWidget {
 
         if (draft.isEmpty && chat.lastMessage != null)
           Text(
-            chat.lastMessage!.sentAt.formatDateTime,
+            chat.lastMessage!.createdAt.formatDateTime,
             style: theme.textTheme.bodySmall,
           ),
       ],

@@ -31,7 +31,7 @@ class MessageWidget extends ConsumerWidget {
               Row(
                 children: [
                   Text(
-                    message.sentAt.formatTime,
+                    message.createdAt.formatTime,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.primary,
                     ),

@@ -52,12 +52,12 @@ impl AttachmentStore {
 
         let chat_id = chat_id.to_string();
 
-        let sent_at = Timestamp::from(id);
+        let created_at = Timestamp::from(id);
         let id = id.to_string();
 
-        let year = sent_at.year().to_string();
-        let month = sent_at.month().to_string();
-        let day = sent_at.day().to_string();
+        let year = created_at.year().to_string();
+        let month = created_at.month().to_string();
+        let day = created_at.day().to_string();
 
         let extension = Path::new(file_name).extension().unwrap_or(OsStr::new(""));
 

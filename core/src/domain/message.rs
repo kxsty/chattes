@@ -12,7 +12,7 @@ pub struct MessageModel {
     pub id: Id,
     pub text: String,
     pub attachments: Vec<AttachmentModel>,
-    pub sent_at: Timestamp,
+    pub created_at: Timestamp,
     pub updated_at: Timestamp,
 }
 
