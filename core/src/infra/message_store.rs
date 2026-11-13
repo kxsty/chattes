@@ -1,7 +1,7 @@
 use std::cmp::Reverse;
 use std::collections::BTreeSet;
-use std::path::PathBuf;
-use std::sync::Mutex;
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 
 use chrono::Utc;
 
@@ -17,11 +17,12 @@ use crate::infra::fs_utils::{
 };
 
 pub struct MessageStore {
-    chats_path: PathBuf,
+    chats_path: Arc<Path>,
     mutex: Mutex<()>,
 }
+
 impl MessageStore {
-    pub fn new(chats_path: PathBuf) -> Self {
+    pub fn new(chats_path: Arc<Path>) -> Self {
         Self {
             chats_path,
             mutex: Mutex::new(()),
@@ -130,7 +131,7 @@ impl MessageStore {
         };
 
         if messages.is_empty() {
-            remove_parents_while(path, |p| p != self.chats_path)?;
+            remove_parents_while(path, |p| p != self.chats_path.as_ref())?;
         } else {
             serialize_to_file(&path, &messages)?;
         }

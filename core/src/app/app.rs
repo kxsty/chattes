@@ -22,7 +22,7 @@ impl App {
         fs::create_dir_all(&app_dir)?;
 
         let chat_store = Arc::new(ChatStore::new(&app_dir)?);
-        let chats_path = app_dir.join("chats");
+        let chats_path = Arc::<Path>::from(app_dir.join("chats"));
 
         let msg_store = Arc::new(MessageStore::new(chats_path.clone()));
         let att_store = Arc::new(AttachmentStore::new(chats_path));

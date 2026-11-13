@@ -1,5 +1,6 @@
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use crate::domain::Id;
 use crate::domain::attachment::AttachmentModel;
@@ -8,11 +9,11 @@ use crate::infra::error::Result;
 use crate::infra::fs_utils::{copy_file, ensure_parents_exist, remove_parents_while};
 
 pub struct AttachmentStore {
-    chats_path: PathBuf,
+    chats_path: Arc<Path>,
 }
 
 impl AttachmentStore {
-    pub const fn new(chats_path: PathBuf) -> Self {
+    pub const fn new(chats_path: Arc<Path>) -> Self {
         Self { chats_path }
     }
 
@@ -43,7 +44,7 @@ impl AttachmentStore {
         }
 
         Ok(remove_parents_while(attachment.path, |p| {
-            p != self.chats_path
+            p != self.chats_path.as_ref()
         })?)
     }
 
