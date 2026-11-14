@@ -13,7 +13,7 @@ class NewChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("New chat")),
-      body: Padding(padding: const .all(16), child: CreateChatForm()),
+      body: SafeArea(top: false, child: CreateChatForm()),
     );
   }
 }
@@ -35,15 +35,28 @@ class _CreateChatFormState extends ConsumerState<CreateChatForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        children: [
-          const SizedBox(height: 32),
-          _CreateChatImage(imagePath: _imagePath, onTap: _pickImage),
-          const SizedBox(height: 32),
-          _CreateChatName(controller: _nameController),
-          const Spacer(),
-          _CreateChatSubmitButton(onPressed: _submit),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: const .all(16),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 32),
+                    _CreateChatImage(imagePath: _imagePath, onTap: _pickImage),
+                    const SizedBox(height: 32),
+                    _CreateChatName(controller: _nameController),
+                    const SizedBox(height: 32),
+                    const Spacer(),
+                    _CreateChatSubmitButton(onPressed: _submit),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
