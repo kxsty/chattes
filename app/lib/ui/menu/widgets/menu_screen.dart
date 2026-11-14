@@ -14,6 +14,7 @@ class MenuScreen extends StatelessWidget {
       extendBody: true,
       body: SafeArea(
         bottom: false,
+        right: false,
         child: ChatList(bottomPadding: kToolbarHeight),
       ),
       bottomNavigationBar: MenuBottomBar(),

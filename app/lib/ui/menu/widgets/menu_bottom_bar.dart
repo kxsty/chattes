@@ -13,6 +13,7 @@ class MenuBottomBar extends StatelessWidget implements PreferredSizeWidget {
 
     return SafeArea(
       top: false,
+      right: false,
       child: Container(
         height: 40,
         margin: kPillMargin,
