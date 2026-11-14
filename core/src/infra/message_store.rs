@@ -46,7 +46,9 @@ impl MessageStore {
     pub fn find(&self, chat_id: Id, id: Id) -> Result<Option<MessageModel>> {
         let path = self.messages_fpath(chat_id, id);
 
-        let mut messages: Vec<MessageModel> = deserialize_from_file(&path)?.unwrap_or_default();
+        let Some(mut messages): Option<Vec<MessageModel>> = deserialize_from_file(&path)? else {
+            return Ok(None);
+        };
         let Ok(index) = messages.binary_search_by(|m| m.id.cmp(&id)) else {
             return Ok(None);
         };
@@ -338,7 +340,7 @@ impl MessageStore {
         let day_s = day.to_string();
 
         let mut path = PathBuf::with_capacity(
-            self.chats_path.to_str().unwrap_or_default().len()
+            self.chats_path.to_string_lossy().len()
                 + 1
                 + year_s.len()
                 + 1

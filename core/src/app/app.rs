@@ -46,7 +46,7 @@ mod test {
 
         let temp_dir = TempDir::new().unwrap();
 
-        let app = App::new(temp_dir.path().to_str().unwrap_or_default()).unwrap();
+        let app = App::new(&temp_dir.path().to_string_lossy()).unwrap();
 
         let mut chat_list = Vec::with_capacity(COUNT as usize);
         for i in 0..COUNT {
@@ -105,7 +105,7 @@ mod test {
 
         let temp_dir = TempDir::new().unwrap();
 
-        let app = App::new(temp_dir.path().to_str().unwrap_or_default()).unwrap();
+        let app = App::new(&temp_dir.path().to_string_lossy()).unwrap();
 
         let chat = app
             .chats

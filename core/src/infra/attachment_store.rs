@@ -1,4 +1,3 @@
-use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -20,9 +19,9 @@ impl AttachmentStore {
     pub fn insert(&self, chat_id: Id, id: Id, source: &Path) -> Result<AttachmentModel> {
         let file_name = source
             .file_name()
-            .and_then(OsStr::to_str)
-            .unwrap_or("")
-            .to_owned();
+            .unwrap_or_default()
+            .to_string_lossy()
+            .into_owned();
 
         let path = ensure_parents_exist(self.attachment_file_path(chat_id, id, &file_name))?;
 
@@ -60,10 +59,10 @@ impl AttachmentStore {
         let month = created_at.month().to_string();
         let day = created_at.day().to_string();
 
-        let extension = Path::new(file_name).extension().unwrap_or(OsStr::new(""));
+        let extension = Path::new(file_name).extension().unwrap_or_default();
 
         let mut path = PathBuf::with_capacity(
-            self.chats_path.to_str().unwrap_or("").len()
+            self.chats_path.to_string_lossy().len()
                 + 1
                 + chat_id.len()
                 + 1
