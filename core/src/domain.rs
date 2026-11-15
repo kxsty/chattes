@@ -1,9 +1,9 @@
 use ferroid::id::SnowflakeDiscordId;
 
-pub mod attachment;
-pub mod chat;
-pub mod datetime;
-pub mod error;
-pub mod message;
+pub(crate) mod attachment;
+pub(crate) mod chat;
+pub(crate) mod datetime;
+pub(crate) mod error;
+pub(crate) mod message;
 
-pub type IdModel = SnowflakeDiscordId;
+pub(crate) type IdModel = SnowflakeDiscordId;

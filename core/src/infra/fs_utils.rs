@@ -11,13 +11,13 @@ use tempfile::NamedTempFile;
 
 use crate::infra::error::Result;
 
-pub(crate) struct DirEntryNames<T: FromStr> {
+pub struct DirEntryNames<T: FromStr> {
     dir: ReadDir,
     _marker: PhantomData<T>,
 }
 
 impl<T: FromStr> DirEntryNames<T> {
-    pub(crate) fn new<P: AsRef<Path>>(path: P) -> io::Result<Self> {
+    pub fn new<P: AsRef<Path>>(path: P) -> io::Result<Self> {
         Ok(Self {
             dir: path.as_ref().read_dir()?,
             _marker: PhantomData,
@@ -95,7 +95,7 @@ pub fn copy_file<P: AsRef<Path>, Q: AsRef<Path>>(from: P, to: Q) -> io::Result<u
     Ok(size)
 }
 
-pub(crate) fn remove_parents_while<P: AsRef<Path>, W: Fn(&Path) -> bool>(
+pub fn remove_parents_while<P: AsRef<Path>, W: Fn(&Path) -> bool>(
     path: P,
     predicate: W,
 ) -> io::Result<bool> {
@@ -131,7 +131,7 @@ pub(crate) fn remove_parents_while<P: AsRef<Path>, W: Fn(&Path) -> bool>(
     Ok(removed_any)
 }
 
-pub(crate) fn ensure_parents_exist(path: PathBuf) -> io::Result<PathBuf> {
+pub fn ensure_parents_exist(path: PathBuf) -> io::Result<PathBuf> {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
     }

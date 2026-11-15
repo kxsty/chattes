@@ -1,5 +1,5 @@
-pub mod attachment_store;
-pub mod chat_store;
-pub mod error;
+pub(crate) mod attachment_store;
+pub(crate) mod chat_store;
+pub(crate) mod error;
 mod fs_utils;
-pub mod message_store;
+pub(crate) mod message_store;
