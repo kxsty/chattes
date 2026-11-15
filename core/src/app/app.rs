@@ -5,13 +5,14 @@ use std::sync::Arc;
 use crate::app::chats::Chats;
 use crate::app::error::Result;
 use crate::app::messages::Messages;
+use crate::frb_generated::RustAutoOpaque;
 use crate::infra::attachment_store::AttachmentStore;
 use crate::infra::chat_store::ChatStore;
 use crate::infra::message_store::MessageStore;
 
 pub struct App {
-    pub chats: Chats,
-    pub messages: Messages,
+    pub chats: RustAutoOpaque<Chats>,
+    pub messages: RustAutoOpaque<Messages>,
 }
 
 impl App {
@@ -27,8 +28,12 @@ impl App {
         let msg_store = Arc::new(MessageStore::new(chats_path.clone()));
         let att_store = Arc::new(AttachmentStore::new(chats_path));
 
-        let chats = Chats::new(chat_store.clone());
-        let messages = Messages::new(chat_store.clone(), msg_store.clone(), att_store.clone());
+        let chats = RustAutoOpaque::new(Chats::new(chat_store.clone()));
+        let messages = RustAutoOpaque::new(Messages::new(
+            chat_store.clone(),
+            msg_store.clone(),
+            att_store.clone(),
+        ));
 
         Ok(Self { chats, messages })
     }
@@ -47,18 +52,19 @@ mod test {
         let temp_dir = TempDir::new().unwrap();
 
         let app = App::new(&temp_dir.path().to_string_lossy()).unwrap();
+        let chats = app.chats.blocking_read();
+        let messages = app.messages.blocking_read();
 
         let mut chat_list = Vec::with_capacity(COUNT as usize);
         for i in 0..COUNT {
-            let mut chat = app
-                .chats
+            let mut chat = chats
                 .create(CreateChat {
                     name: i.to_string(),
                 })
                 .unwrap();
 
             chat.last_message = Some(
-                app.messages
+                messages
                     .create(CreateMessage {
                         chat_id: chat.id,
                         text: String::default(),
@@ -70,8 +76,7 @@ mod test {
             chat_list.push(chat);
         }
 
-        let chat_list_asc = app
-            .chats
+        let chat_list_asc = chats
             .list(ListChats {
                 last_message_id_cursor: None,
                 limit: COUNT,
@@ -84,8 +89,7 @@ mod test {
             assert_eq!(a.id, b.id);
         }
 
-        let chat_list_desc = app
-            .chats
+        let chat_list_desc = chats
             .list(ListChats {
                 last_message_id_cursor: None,
                 limit: COUNT,
@@ -106,9 +110,10 @@ mod test {
         let temp_dir = TempDir::new().unwrap();
 
         let app = App::new(&temp_dir.path().to_string_lossy()).unwrap();
+        let chats = app.chats.blocking_read();
+        let messages = app.messages.blocking_read();
 
-        let chat = app
-            .chats
+        let chat = chats
             .create(CreateChat {
                 name: "messages_list_correct_order".to_string(),
             })
@@ -117,7 +122,7 @@ mod test {
         let mut msg_list = Vec::with_capacity(COUNT as usize);
         for _ in 0..COUNT {
             msg_list.push(
-                app.messages
+                messages
                     .create(CreateMessage {
                         chat_id: chat.id,
                         text: String::default(),
@@ -127,8 +132,7 @@ mod test {
             );
         }
 
-        let msg_list_asc = app
-            .messages
+        let msg_list_asc = messages
             .list(ListMessages {
                 chat_id: chat.id,
                 id_cursor: None,
@@ -142,8 +146,7 @@ mod test {
             assert_eq!(a.id, b.id);
         }
 
-        let msg_list_desc = app
-            .messages
+        let msg_list_desc = messages
             .list(ListMessages {
                 chat_id: chat.id,
                 id_cursor: None,
