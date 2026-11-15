@@ -16,10 +16,17 @@ pub struct MessageModel {
     pub updated_at: Timestamp,
 }
 
-#[allow(clippy::non_canonical_partial_ord_impl)]
+impl PartialEq for MessageModel {
+    fn eq(&self, other: &Self) -> bool {
+        self.id.eq(&other.id)
+    }
+}
+
+impl Eq for MessageModel {}
+
 impl PartialOrd for MessageModel {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.id.cmp(&other.id))
+        Some(self.cmp(other))
     }
 }
 
@@ -28,14 +35,6 @@ impl Ord for MessageModel {
         self.id.cmp(&other.id)
     }
 }
-
-impl PartialEq for MessageModel {
-    fn eq(&self, other: &Self) -> bool {
-        self.id.eq(&other.id)
-    }
-}
-
-impl Eq for MessageModel {}
 
 impl Borrow<Id> for MessageModel {
     fn borrow(&self) -> &Id {
