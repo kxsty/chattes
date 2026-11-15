@@ -24,18 +24,22 @@ class ChatTile extends StatelessWidget {
 
         final draft = ref.watch(draftProvider(chat.id));
 
-        return ListTile(
-          onTap: () => ref.read(selectedChatIdProvider.notifier).set(chat.id),
-          selected: isSelected,
-          contentPadding: const .symmetric(horizontal: 8),
-          leading: LetterAvatar(title: chat.name),
-          splashColor: theme.colorScheme.surfaceContainerLowest,
-          selectedTileColor: theme.colorScheme.surfaceContainerLowest,
-          hoverColor: isSelected
-              ? theme.colorScheme.surfaceContainerLowest
-              : theme.colorScheme.surface,
-          title: _ChatTileTitle(chat: chat, draft: draft),
-          subtitle: _ChatTileSubtitle(chat: chat, draft: draft),
+        return MediaQuery.removePadding(
+          context: context,
+          removeRight: true,
+          child: ListTile(
+            onTap: () => ref.read(selectedChatIdProvider.notifier).set(chat.id),
+            selected: isSelected,
+            contentPadding: const .symmetric(horizontal: 8),
+            leading: LetterAvatar(title: chat.name),
+            splashColor: theme.colorScheme.surfaceContainerLowest,
+            selectedTileColor: theme.colorScheme.surfaceContainerLowest,
+            hoverColor: isSelected
+                ? theme.colorScheme.surfaceContainerLowest
+                : theme.colorScheme.surface,
+            title: _ChatTileTitle(chat: chat, draft: draft),
+            subtitle: _ChatTileSubtitle(chat: chat, draft: draft),
+          ),
         );
       },
     );
