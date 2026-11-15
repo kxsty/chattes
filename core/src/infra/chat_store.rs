@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::domain::Id;
+use crate::domain::IdModel;
 use crate::domain::chat::ChatModel;
 use crate::domain::message::MessageModel;
 use crate::infra::error::Result;
@@ -13,6 +13,7 @@ use crate::infra::fs_utils::{
 pub struct ChatStore {
     path: PathBuf,
 }
+
 impl ChatStore {
     pub fn new(app_path: &Path) -> Result<Self> {
         let path = app_path.join("chats");
@@ -23,15 +24,15 @@ impl ChatStore {
 
     pub fn select(
         &self,
-        last_message_id_cursor: Option<Id>,
+        last_message_id_cursor: Option<IdModel>,
         desc: bool,
         limit: usize,
     ) -> Result<Vec<ChatModel>> {
         let last_message_id_cursor = last_message_id_cursor.unwrap_or_else(|| {
             if desc {
-                Id::from_raw(u64::MAX)
+                IdModel::from_raw(u64::MAX)
             } else {
-                Id::from_raw(u64::MIN)
+                IdModel::from_raw(u64::MIN)
             }
         });
 
@@ -43,7 +44,7 @@ impl ChatStore {
 
         let mut chats = Vec::with_capacity(limit);
 
-        for id in DirEntryNames::<Id>::new(&self.path)? {
+        for id in DirEntryNames::<IdModel>::new(&self.path)? {
             let id = id?;
 
             let Some(chat) = self.find(id)? else {
@@ -71,7 +72,7 @@ impl ChatStore {
         Ok(chats)
     }
 
-    pub fn find(&self, id: Id) -> Result<Option<ChatModel>> {
+    pub fn find(&self, id: IdModel) -> Result<Option<ChatModel>> {
         let path = self.chat_fpath(id);
 
         deserialize_from_file(path)
@@ -79,7 +80,7 @@ impl ChatStore {
 
     pub fn insert(
         &self,
-        id: Id,
+        id: IdModel,
         name: String,
         last_message: Option<MessageModel>,
     ) -> Result<ChatModel> {
@@ -99,7 +100,7 @@ impl ChatStore {
     #[allow(clippy::option_option)]
     pub fn update(
         &self,
-        id: Id,
+        id: IdModel,
         name: Option<String>,
         last_message: Option<Option<MessageModel>>,
     ) -> Result<Option<ChatModel>> {
@@ -131,7 +132,7 @@ impl ChatStore {
         Ok(Some(chat))
     }
 
-    pub fn delete(&self, id: Id) -> Result<bool> {
+    pub fn delete(&self, id: IdModel) -> Result<bool> {
         let path = self.chat_fpath(id);
         if !path.try_exists()? {
             return Ok(false);
@@ -144,11 +145,11 @@ impl ChatStore {
         Ok(true)
     }
 
-    pub fn exists(&self, id: Id) -> Result<bool> {
+    pub fn exists(&self, id: IdModel) -> Result<bool> {
         Ok(self.chat_fpath(id).try_exists()?)
     }
 
-    fn chat_fpath(&self, id: Id) -> PathBuf {
+    fn chat_fpath(&self, id: IdModel) -> PathBuf {
         self.path.join(id.to_string()).join("data.yaml")
     }
 }

@@ -37,6 +37,7 @@ pub struct Chat {
     pub name: String,
     pub last_message: Option<Message>,
 }
+
 impl From<ChatModel> for Chat {
     fn from(value: ChatModel) -> Self {
         Self {
@@ -89,6 +90,7 @@ pub struct Message {
     pub text: String,
     pub attachments: Vec<Attachment>,
 }
+
 impl From<MessageModel> for Message {
     fn from(value: MessageModel) -> Self {
         Self {
@@ -145,6 +147,7 @@ pub struct Attachment {
     pub path: String,
     pub file_name: String,
 }
+
 impl From<AttachmentModel> for Attachment {
     fn from(value: AttachmentModel) -> Self {
         Self {

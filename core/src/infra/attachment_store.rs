@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use crate::domain::Id;
+use crate::domain::IdModel;
 use crate::domain::attachment::AttachmentModel;
 use crate::domain::datetime::Timestamp;
 use crate::infra::error::Result;
@@ -16,7 +16,7 @@ impl AttachmentStore {
         Self { chats_path }
     }
 
-    pub fn insert(&self, chat_id: Id, id: Id, source: &Path) -> Result<AttachmentModel> {
+    pub fn insert(&self, chat_id: IdModel, id: IdModel, source: &Path) -> Result<AttachmentModel> {
         let file_name = source
             .file_name()
             .unwrap_or_default()
@@ -47,7 +47,7 @@ impl AttachmentStore {
         })?)
     }
 
-    fn attachment_file_path(&self, chat_id: Id, id: Id, file_name: &str) -> PathBuf {
+    fn attachment_file_path(&self, chat_id: IdModel, id: IdModel, file_name: &str) -> PathBuf {
         const INNER_DIR: &str = "attachments";
 
         let chat_id = chat_id.to_string();

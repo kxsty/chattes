@@ -15,6 +15,7 @@ pub(crate) struct DirEntryNames<T: FromStr> {
     dir: ReadDir,
     _marker: PhantomData<T>,
 }
+
 impl<T: FromStr> DirEntryNames<T> {
     pub(crate) fn new<P: AsRef<Path>>(path: P) -> io::Result<Self> {
         Ok(Self {
@@ -23,6 +24,7 @@ impl<T: FromStr> DirEntryNames<T> {
         })
     }
 }
+
 impl<T: FromStr> Iterator for DirEntryNames<T> {
     type Item = io::Result<T>;
     fn next(&mut self) -> Option<Self::Item> {

@@ -9,7 +9,7 @@ use chrono::{DateTime, Datelike, Utc};
 use ferroid::time::DISCORD_EPOCH;
 use serde::{Deserialize, Serialize};
 
-use crate::domain::{Id, error::ValidationError};
+use crate::domain::{IdModel, error::ValidationError};
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 pub struct Timestamp(DateTime<Utc>);
@@ -53,8 +53,8 @@ impl From<Timestamp> for SystemTime {
     }
 }
 
-impl From<Id> for Timestamp {
-    fn from(value: Id) -> Self {
+impl From<IdModel> for Timestamp {
+    fn from(value: IdModel) -> Self {
         #[allow(clippy::cast_possible_truncation)]
         let timestamp = value.timestamp().cast_signed() + DISCORD_EPOCH.as_millis() as i64;
         let date_time = DateTime::<Utc>::from_timestamp_millis(timestamp)

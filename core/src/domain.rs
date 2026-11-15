@@ -6,4 +6,4 @@ pub mod datetime;
 pub mod error;
 pub mod message;
 
-pub type Id = SnowflakeDiscordId;
+pub type IdModel = SnowflakeDiscordId;

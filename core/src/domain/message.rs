@@ -3,13 +3,13 @@ use std::{borrow::Borrow, cmp::Ordering};
 
 use ferroid::serde::snow_as_base32;
 
-use crate::domain::{Id, attachment::AttachmentModel, datetime::Timestamp};
+use crate::domain::{IdModel, attachment::AttachmentModel, datetime::Timestamp};
 
 /// Owned by Chat
 #[derive(Serialize, Deserialize)]
 pub struct MessageModel {
     #[serde(with = "snow_as_base32")]
-    pub id: Id,
+    pub id: IdModel,
     pub text: String,
     pub attachments: Vec<AttachmentModel>,
     pub created_at: Timestamp,
@@ -36,8 +36,8 @@ impl Ord for MessageModel {
     }
 }
 
-impl Borrow<Id> for MessageModel {
-    fn borrow(&self) -> &Id {
+impl Borrow<IdModel> for MessageModel {
+    fn borrow(&self) -> &IdModel {
         &self.id
     }
 }

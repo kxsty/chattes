@@ -10,7 +10,7 @@ use crate::app::dto::{
 };
 use crate::app::error::Error::Validation;
 use crate::app::error::Result;
-use crate::domain::Id;
+use crate::domain::IdModel;
 use crate::domain::datetime::Timestamp;
 use crate::infra::attachment_store::AttachmentStore;
 use crate::infra::chat_store::ChatStore;
@@ -37,13 +37,13 @@ impl Messages {
     }
 
     pub fn list(&self, request: ListMessages) -> Result<Vec<Message>> {
-        let chat_id = Id::from_raw(request.chat_id);
+        let chat_id = IdModel::from_raw(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
-        let id = request.id_cursor.map(Id::from_raw);
+        let id = request.id_cursor.map(IdModel::from_raw);
 
         let messages = self
             .msg_store
@@ -54,13 +54,13 @@ impl Messages {
     }
 
     pub fn read(&self, request: ReadMessage) -> Result<Option<Message>> {
-        let chat_id = Id::from_raw(request.chat_id);
+        let chat_id = IdModel::from_raw(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
-        let id = Id::from_raw(request.id);
+        let id = IdModel::from_raw(request.id);
 
         let message = self.msg_store.find(chat_id, id)?;
         let response = message.map(Message::from);
@@ -69,7 +69,7 @@ impl Messages {
     }
 
     pub fn create(&self, request: CreateMessage) -> Result<Message> {
-        let chat_id = Id::from_raw(request.chat_id);
+        let chat_id = IdModel::from_raw(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
@@ -107,13 +107,13 @@ impl Messages {
     }
 
     pub fn update(&self, request: UpdateMessage) -> Result<Message> {
-        let chat_id = Id::from_raw(request.chat_id);
+        let chat_id = IdModel::from_raw(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
-        let id = Id::from_raw(request.id);
+        let id = IdModel::from_raw(request.id);
 
         let message = self.msg_store.update(chat_id, id, request.text)?;
         let response = Message::from(message);
@@ -122,13 +122,13 @@ impl Messages {
     }
 
     pub fn delete(&self, request: DeleteMessage) -> Result<bool> {
-        let chat_id = Id::from_raw(request.chat_id);
+        let chat_id = IdModel::from_raw(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
-        let id = Id::from_raw(request.id);
+        let id = IdModel::from_raw(request.id);
 
         let Some(message) = self.msg_store.delete(chat_id, id)? else {
             return Ok(false);

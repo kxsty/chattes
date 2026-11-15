@@ -12,22 +12,27 @@ pub enum Error {
     Serialization(String),
     NotFound(String),
 }
+
 impl From<io::Error> for Error {
     fn from(value: io::Error) -> Self {
         Self::IO(value)
     }
 }
+
 impl From<PersistError> for Error {
     fn from(value: PersistError) -> Self {
         Error::IO(value.error)
     }
 }
+
 impl From<yaml_serde::Error> for Error {
     fn from(value: yaml_serde::Error) -> Self {
         Self::Serialization(value.to_string())
     }
 }
+
 impl error::Error for Error {}
+
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         Debug::fmt(&self, f)

@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use chrono::Utc;
 
-use crate::domain::Id;
+use crate::domain::IdModel;
 use crate::domain::attachment::AttachmentModel;
 use crate::domain::datetime::{Day, Month, Timestamp, Year};
 use crate::domain::message::MessageModel;
@@ -31,8 +31,8 @@ impl MessageStore {
 
     pub fn select(
         &self,
-        chat_id: Id,
-        id_cursor: Option<Id>,
+        chat_id: IdModel,
+        id_cursor: Option<IdModel>,
         limit: usize,
         desc: bool,
     ) -> Result<Vec<MessageModel>> {
@@ -43,7 +43,7 @@ impl MessageStore {
         }
     }
 
-    pub fn find(&self, chat_id: Id, id: Id) -> Result<Option<MessageModel>> {
+    pub fn find(&self, chat_id: IdModel, id: IdModel) -> Result<Option<MessageModel>> {
         let path = self.messages_fpath(chat_id, id);
 
         let Some(mut messages): Option<Vec<MessageModel>> = deserialize_from_file(&path)? else {
@@ -58,8 +58,8 @@ impl MessageStore {
 
     pub fn insert(
         &self,
-        chat_id: Id,
-        id: Id,
+        chat_id: IdModel,
+        id: IdModel,
         created_at: Timestamp,
         text: String,
         attachments: Vec<AttachmentModel>,
@@ -89,7 +89,12 @@ impl MessageStore {
         Ok(message)
     }
 
-    pub fn update(&self, chat_id: Id, id: Id, text: Option<String>) -> Result<MessageModel> {
+    pub fn update(
+        &self,
+        chat_id: IdModel,
+        id: IdModel,
+        text: Option<String>,
+    ) -> Result<MessageModel> {
         let path = ensure_parents_exist(self.messages_fpath(chat_id, id))?;
 
         let _guard = self.mutex.lock();
@@ -118,7 +123,7 @@ impl MessageStore {
         Ok(messages.swap_remove(index))
     }
 
-    pub fn delete(&self, chat_id: Id, id: Id) -> Result<Option<MessageModel>> {
+    pub fn delete(&self, chat_id: IdModel, id: IdModel) -> Result<Option<MessageModel>> {
         let path = self.messages_fpath(chat_id, id);
         if !path.try_exists()? {
             return Ok(None);
@@ -143,8 +148,8 @@ impl MessageStore {
 
     fn select_asc(
         &self,
-        chat_id: Id,
-        id_cursor: Option<Id>,
+        chat_id: IdModel,
+        id_cursor: Option<IdModel>,
         take: usize,
     ) -> Result<Vec<MessageModel>> {
         let mut result = Vec::with_capacity(take);
@@ -152,7 +157,7 @@ impl MessageStore {
             return Ok(result);
         }
 
-        let id_cursor = id_cursor.unwrap_or_else(|| Id::from_raw(u64::MIN));
+        let id_cursor = id_cursor.unwrap_or_else(|| IdModel::from_raw(u64::MIN));
         let date_cursor = Timestamp::from(id_cursor);
 
         let mut path = self.chats_path.join(chat_id.to_string());
@@ -235,8 +240,8 @@ impl MessageStore {
 
     fn select_desc(
         &self,
-        chat_id: Id,
-        id_cursor: Option<Id>,
+        chat_id: IdModel,
+        id_cursor: Option<IdModel>,
         take: usize,
     ) -> Result<Vec<MessageModel>> {
         let mut result = Vec::with_capacity(take);
@@ -244,7 +249,7 @@ impl MessageStore {
             return Ok(result);
         }
 
-        let id_cursor = id_cursor.unwrap_or_else(|| Id::from_raw(u64::MAX));
+        let id_cursor = id_cursor.unwrap_or_else(|| IdModel::from_raw(u64::MAX));
         let date_cursor = Timestamp::from(id_cursor);
 
         let mut path = self.chats_path.join(chat_id.to_string());
@@ -325,7 +330,7 @@ impl MessageStore {
         Ok(result)
     }
 
-    fn messages_fpath(&self, chat_id: Id, id: Id) -> PathBuf {
+    fn messages_fpath(&self, chat_id: IdModel, id: IdModel) -> PathBuf {
         let chat_id = chat_id.to_string();
         let created_at = Timestamp::from(id);
 

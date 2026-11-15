@@ -3,12 +3,12 @@ use std::cmp::Ordering;
 use ferroid::serde::snow_as_base32;
 use serde::{Deserialize, Serialize};
 
-use crate::domain::{Id, message::MessageModel};
+use crate::domain::{IdModel, message::MessageModel};
 
 #[derive(Serialize, Deserialize)]
 pub struct ChatModel {
     #[serde(with = "snow_as_base32")]
-    pub id: Id,
+    pub id: IdModel,
     pub name: String,
     pub last_message: Option<MessageModel>,
 }
