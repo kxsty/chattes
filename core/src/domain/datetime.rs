@@ -80,7 +80,7 @@ impl FromStr for Year {
     type Err = ValidationError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let year = s.parse::<i16>()?;
+        let year = s.parse()?;
         Ok(Year::new(year))
     }
 }
@@ -112,7 +112,7 @@ impl FromStr for Month {
     type Err = ValidationError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let month = s.parse::<i8>()?;
+        let month = s.parse()?;
         Month::new(month).ok_or_else(|| "Invalid month value".into())
     }
 }
@@ -170,7 +170,7 @@ impl FromStr for Day {
     type Err = ValidationError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let day = s.parse::<i8>()?;
+        let day = s.parse()?;
         Day::new(day).ok_or_else(|| "Invalid day value".into())
     }
 }

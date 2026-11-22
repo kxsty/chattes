@@ -18,7 +18,10 @@ pub struct DirEntryNames<T: FromStr> {
 }
 
 impl<T: FromStr> DirEntryNames<T> {
-    pub fn new<P: AsRef<Path>>(path: P) -> io::Result<Self> {
+    pub fn new<P>(path: P) -> io::Result<Self>
+    where
+        P: AsRef<Path>,
+    {
         Ok(Self {
             dir: path.as_ref().read_dir()?,
             _marker: PhantomData,
@@ -48,7 +51,11 @@ impl<T: FromStr> Iterator for DirEntryNames<T> {
     }
 }
 
-pub fn deserialize_from_file<P: AsRef<Path>, T: DeserializeOwned>(path: P) -> Result<Option<T>> {
+pub fn deserialize_from_file<P, T>(path: P) -> Result<Option<T>>
+where
+    P: AsRef<Path>,
+    T: DeserializeOwned,
+{
     let path = path.as_ref();
 
     let value = match OpenOptions::new().read(true).open(path) {
@@ -60,7 +67,11 @@ pub fn deserialize_from_file<P: AsRef<Path>, T: DeserializeOwned>(path: P) -> Re
     Ok(value)
 }
 
-pub fn serialize_to_file<P: AsRef<Path>, T: ?Sized + Serialize>(path: P, value: &T) -> Result<()> {
+pub fn serialize_to_file<P, T>(path: P, value: &T) -> Result<()>
+where
+    P: AsRef<Path>,
+    T: ?Sized + Serialize,
+{
     let path = path.as_ref();
     let dir = path.parent().expect("Path must have parent directory");
 
@@ -158,10 +169,11 @@ fn prepare_hash_based_path(
     Ok(path)
 }
 
-pub fn remove_parents_while<P: AsRef<Path>, W: Fn(&Path) -> bool>(
-    path: P,
-    predicate: W,
-) -> io::Result<bool> {
+pub fn remove_parents_while<P, W>(path: P, predicate: W) -> io::Result<bool>
+where
+    P: AsRef<Path>,
+    W: Fn(&Path) -> bool,
+{
     let mut removed_any = false;
 
     let mut path = path.as_ref();
