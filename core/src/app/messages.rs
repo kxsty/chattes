@@ -130,13 +130,14 @@ impl Messages {
 
         let id = IdModel::from_raw(request.id);
 
-        let Some(message) = self.msg_store.delete(chat_id, id)? else {
+        let Some(_message) = self.msg_store.delete(chat_id, id)? else {
             return Ok(false);
         };
 
-        for attachment in message.attachments {
+        // Temporarily disabled attachment clean up
+        /*for attachment in message.attachments {
             self.att_store.delete(attachment)?;
-        }
+        }*/
 
         Ok(true)
     }

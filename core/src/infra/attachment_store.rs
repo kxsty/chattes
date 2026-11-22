@@ -3,9 +3,8 @@ use std::sync::Arc;
 
 use crate::domain::IdModel;
 use crate::domain::attachment::AttachmentModel;
-use crate::domain::datetime::Timestamp;
 use crate::infra::error::Result;
-use crate::infra::fs_utils::{copy_file, ensure_parents_exist, remove_parents_while};
+use crate::infra::fs_utils::{copy_and_hash_file, ensure_exists, remove_parents_while};
 
 pub struct AttachmentStore {
     chats_path: Arc<Path>,
@@ -23,15 +22,15 @@ impl AttachmentStore {
             .to_string_lossy()
             .into_owned();
 
-        let path = ensure_parents_exist(self.attachment_file_path(chat_id, id, &file_name))?;
+        let dir_path = ensure_exists(self.attachment_dir_path(chat_id))?;
 
-        let size = copy_file(source, &path)?;
+        let (size, path) = copy_and_hash_file(source, dir_path)?;
 
         let response = AttachmentModel {
             id,
             path,
             file_name,
-            size,
+            size: size as u64,
         };
 
         Ok(response)
@@ -47,46 +46,18 @@ impl AttachmentStore {
         })?)
     }
 
-    fn attachment_file_path(&self, chat_id: IdModel, id: IdModel, file_name: &str) -> PathBuf {
+    fn attachment_dir_path(&self, chat_id: IdModel) -> PathBuf {
         const INNER_DIR: &str = "attachments";
 
         let chat_id = chat_id.to_string();
 
-        let created_at = Timestamp::from(id);
-        let id = id.to_string();
-
-        let year = created_at.year().to_string();
-        let month = created_at.month().to_string();
-        let day = created_at.day().to_string();
-
-        let extension = Path::new(file_name).extension().unwrap_or_default();
-
         let mut path = PathBuf::with_capacity(
-            self.chats_path.to_string_lossy().len()
-                + 1
-                + chat_id.len()
-                + 1
-                + year.len()
-                + 1
-                + month.len()
-                + 1
-                + day.len()
-                + 1
-                + INNER_DIR.len()
-                + 1
-                + id.len()
-                + 1
-                + extension.len(),
+            self.chats_path.to_string_lossy().len() + 1 + chat_id.len() + 1 + INNER_DIR.len(),
         );
 
         path.push(&self.chats_path);
         path.push(chat_id);
-        path.push(year);
-        path.push(month);
-        path.push(day);
         path.push(INNER_DIR);
-        path.push(id);
-        path.set_extension(extension);
 
         path
     }
