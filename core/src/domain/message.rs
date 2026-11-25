@@ -1,15 +1,15 @@
 use serde::{Deserialize, Serialize};
 use std::{borrow::Borrow, cmp::Ordering};
 
-use crate::domain::{attachment::AttachmentModel, datetime::TimestampModel, id::IdModel};
+use crate::domain::{attachment::AttachmentModel, datetime::DateTimeModel, id::IdModel};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageModel {
     pub id: IdModel,
     pub text: String,
     pub attachments: Vec<AttachmentModel>,
-    pub created_at: TimestampModel,
-    pub updated_at: TimestampModel,
+    pub created_at: DateTimeModel,
+    pub updated_at: DateTimeModel,
 }
 
 impl PartialEq for MessageModel {

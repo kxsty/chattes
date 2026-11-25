@@ -11,9 +11,9 @@ use serde::{Deserialize, Serialize};
 use crate::domain::{error::ValidationError, id::IdModel};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-pub struct TimestampModel(pub DateTime<Utc>);
+pub struct DateTimeModel(pub DateTime<Utc>);
 
-impl TimestampModel {
+impl DateTimeModel {
     pub fn year(&self) -> Year {
         #[allow(clippy::cast_possible_truncation)]
         Year::new(self.0.year() as i16)
@@ -30,7 +30,7 @@ impl TimestampModel {
     }
 }
 
-impl From<IdModel> for TimestampModel {
+impl From<IdModel> for DateTimeModel {
     fn from(value: IdModel) -> Self {
         #[allow(clippy::cast_possible_truncation)]
         let timestamp = value.timestamp().cast_signed() + DISCORD_EPOCH.as_millis() as i64;
