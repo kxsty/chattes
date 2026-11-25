@@ -2,8 +2,8 @@ use std::cmp::Ordering;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::domain::IdModel;
 use crate::domain::chat::ChatModel;
+use crate::domain::id::IdModel;
 use crate::domain::message::MessageModel;
 use crate::infra::error::Result;
 use crate::infra::fs_utils::{
@@ -30,9 +30,9 @@ impl ChatStore {
     ) -> Result<Vec<ChatModel>> {
         let last_message_id_cursor = last_message_id_cursor.unwrap_or_else(|| {
             if desc {
-                IdModel::from_raw(u64::MAX)
+                IdModel::from(u64::MAX)
             } else {
-                IdModel::from_raw(u64::MIN)
+                IdModel::from(u64::MIN)
             }
         });
 

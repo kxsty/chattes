@@ -9,7 +9,7 @@ use chrono::{DateTime, Datelike, Utc};
 use ferroid::time::DISCORD_EPOCH;
 use serde::{Deserialize, Serialize};
 
-use crate::domain::{IdModel, error::ValidationError};
+use crate::domain::{error::ValidationError, id::IdModel};
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 pub struct Timestamp(DateTime<Utc>);

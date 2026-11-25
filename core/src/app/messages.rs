@@ -10,8 +10,8 @@ use crate::app::dto::{
 };
 use crate::app::error::Error::Validation;
 use crate::app::error::Result;
-use crate::domain::IdModel;
 use crate::domain::datetime::Timestamp;
+use crate::domain::id::IdModel;
 use crate::infra::attachment_store::AttachmentStore;
 use crate::infra::chat_store::ChatStore;
 use crate::infra::message_store::MessageStore;
@@ -37,13 +37,13 @@ impl Messages {
     }
 
     pub fn list(&self, request: ListMessages) -> Result<Vec<Message>> {
-        let chat_id = IdModel::from_raw(request.chat_id);
+        let chat_id = IdModel::from(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
-        let id = request.id_cursor.map(IdModel::from_raw);
+        let id = request.id_cursor.map(IdModel::from);
 
         let messages = self
             .msg_store
@@ -54,13 +54,13 @@ impl Messages {
     }
 
     pub fn read(&self, request: ReadMessage) -> Result<Option<Message>> {
-        let chat_id = IdModel::from_raw(request.chat_id);
+        let chat_id = IdModel::from(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
-        let id = IdModel::from_raw(request.id);
+        let id = IdModel::from(request.id);
 
         let message = self.msg_store.find(chat_id, id)?;
         let response = message.map(Message::from);
@@ -69,7 +69,7 @@ impl Messages {
     }
 
     pub fn create(&self, request: CreateMessage) -> Result<Message> {
-        let chat_id = IdModel::from_raw(request.chat_id);
+        let chat_id = IdModel::from(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
@@ -80,7 +80,7 @@ impl Messages {
         let mut attachemnts = Vec::with_capacity(request.attachments.len());
         // TODO: parallel execution
         for attachments in request.attachments {
-            let id = ID_GENERATOR.next_id(|_| thread::yield_now());
+            let id = IdModel::from(ID_GENERATOR.next_id(|_| thread::yield_now()));
 
             let attachment = self
                 .att_store
@@ -88,7 +88,7 @@ impl Messages {
             attachemnts.push(attachment);
         }
 
-        let id = ID_GENERATOR.next_id(|_| thread::yield_now());
+        let id = IdModel::from(ID_GENERATOR.next_id(|_| thread::yield_now()));
 
         let mut message =
             self.msg_store
@@ -107,13 +107,13 @@ impl Messages {
     }
 
     pub fn update(&self, request: UpdateMessage) -> Result<Message> {
-        let chat_id = IdModel::from_raw(request.chat_id);
+        let chat_id = IdModel::from(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
-        let id = IdModel::from_raw(request.id);
+        let id = IdModel::from(request.id);
 
         let message = self.msg_store.update(chat_id, id, request.text)?;
         let response = Message::from(message);
@@ -122,13 +122,13 @@ impl Messages {
     }
 
     pub fn delete(&self, request: DeleteMessage) -> Result<bool> {
-        let chat_id = IdModel::from_raw(request.chat_id);
+        let chat_id = IdModel::from(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
             return Err(Validation("Chat not found".into()));
         }
 
-        let id = IdModel::from_raw(request.id);
+        let id = IdModel::from(request.id);
 
         let Some(_message) = self.msg_store.delete(chat_id, id)? else {
             return Ok(false);

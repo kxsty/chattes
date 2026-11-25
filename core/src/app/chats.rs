@@ -5,7 +5,7 @@ use crate::app::ID_GENERATOR;
 use crate::app::dto::{Chat, CreateChat, DeleteChat, ListChats, ReadChat, UpdateChat};
 use crate::app::error::Error::Validation;
 use crate::app::error::Result;
-use crate::domain::IdModel;
+use crate::domain::id::IdModel;
 use crate::infra::chat_store::ChatStore;
 
 #[derive(Clone)]
@@ -19,7 +19,7 @@ impl Chats {
     }
 
     pub fn list(&self, request: ListChats) -> Result<Vec<Chat>> {
-        let last_message_id_cursor = request.last_message_id_cursor.map(IdModel::from_raw);
+        let last_message_id_cursor = request.last_message_id_cursor.map(IdModel::from);
 
         let chats =
             self.chat_store
@@ -30,7 +30,7 @@ impl Chats {
     }
 
     pub fn read(&self, request: ReadChat) -> Result<Option<Chat>> {
-        let id = IdModel::from_raw(request.id);
+        let id = IdModel::from(request.id);
 
         let chat = self.chat_store.find(id)?;
         let response = chat.map(Chat::from);
@@ -39,9 +39,9 @@ impl Chats {
     }
 
     pub fn create(&self, request: CreateChat) -> Result<Chat> {
-        let id = ID_GENERATOR.next_id(|_| {
+        let id = IdModel::from(ID_GENERATOR.next_id(|_| {
             thread::yield_now();
-        });
+        }));
 
         if request.name.len() > u8::MAX as usize {
             return Err(Validation("Chat name too long".into()));
@@ -54,7 +54,7 @@ impl Chats {
     }
 
     pub fn update(&self, request: UpdateChat) -> Result<Option<Chat>> {
-        let id = IdModel::from_raw(request.id);
+        let id = IdModel::from(request.id);
 
         let chat = self.chat_store.update(id, request.name, None)?;
         let response = chat.map(Chat::from);
@@ -63,7 +63,7 @@ impl Chats {
     }
 
     pub fn delete(&self, request: DeleteChat) -> Result<bool> {
-        let id = IdModel::from_raw(request.id);
+        let id = IdModel::from(request.id);
 
         let response = self.chat_store.delete(id)?;
 

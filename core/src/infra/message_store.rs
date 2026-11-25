@@ -5,9 +5,9 @@ use std::sync::{Arc, Mutex};
 
 use chrono::Utc;
 
-use crate::domain::IdModel;
 use crate::domain::attachment::AttachmentModel;
 use crate::domain::datetime::{Day, Month, Timestamp, Year};
+use crate::domain::id::IdModel;
 use crate::domain::message::MessageModel;
 use crate::infra::error::Error::NotFound;
 use crate::infra::error::Result;
@@ -157,7 +157,7 @@ impl MessageStore {
             return Ok(result);
         }
 
-        let id_cursor = id_cursor.unwrap_or_else(|| IdModel::from_raw(u64::MIN));
+        let id_cursor = id_cursor.unwrap_or_else(|| IdModel::from(u64::MIN));
         let date_cursor = Timestamp::from(id_cursor);
 
         let mut path = self.chats_path.join(chat_id.to_string());
@@ -249,7 +249,7 @@ impl MessageStore {
             return Ok(result);
         }
 
-        let id_cursor = id_cursor.unwrap_or_else(|| IdModel::from_raw(u64::MAX));
+        let id_cursor = id_cursor.unwrap_or_else(|| IdModel::from(u64::MAX));
         let date_cursor = Timestamp::from(id_cursor);
 
         let mut path = self.chats_path.join(chat_id.to_string());

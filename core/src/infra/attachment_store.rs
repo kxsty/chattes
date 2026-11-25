@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use crate::domain::IdModel;
 use crate::domain::attachment::AttachmentModel;
+use crate::domain::id::IdModel;
 use crate::infra::error::Result;
 use crate::infra::fs_utils::{copy_and_hash_file, ensure_exists, remove_parents_while};
 
