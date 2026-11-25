@@ -19,7 +19,7 @@ impl App {
     pub fn new(dir: &str) -> Result<Self> {
         let dir = Path::new(dir);
 
-        let app_dir = dir.join("Chattes");
+        let app_dir = dir.join("chattes");
         fs::create_dir_all(&app_dir)?;
 
         let chat_store = Arc::new(ChatStore::new(&app_dir)?);
@@ -29,11 +29,7 @@ impl App {
         let att_store = Arc::new(AttachmentStore::new(chats_path));
 
         let chats = RustAutoOpaque::new(Chats::new(chat_store.clone()));
-        let messages = RustAutoOpaque::new(Messages::new(
-            chat_store.clone(),
-            msg_store.clone(),
-            att_store.clone(),
-        ));
+        let messages = RustAutoOpaque::new(Messages::new(chat_store, msg_store, att_store));
 
         Ok(Self { chats, messages })
     }
