@@ -2,7 +2,6 @@ use core::fmt;
 use std::{
     fmt::{Display, Formatter},
     str::FromStr,
-    time::SystemTime,
 };
 
 use chrono::{DateTime, Datelike, Utc};
@@ -11,8 +10,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::domain::{error::ValidationError, id::IdModel};
 
-#[derive(Clone, Default, Serialize, Deserialize)]
-pub struct TimestampModel(DateTime<Utc>);
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub struct TimestampModel(pub DateTime<Utc>);
 
 impl TimestampModel {
     pub fn year(&self) -> Year {
@@ -31,30 +30,6 @@ impl TimestampModel {
     }
 }
 
-impl From<DateTime<Utc>> for TimestampModel {
-    fn from(value: DateTime<Utc>) -> Self {
-        Self(value)
-    }
-}
-
-impl From<TimestampModel> for DateTime<Utc> {
-    fn from(value: TimestampModel) -> Self {
-        value.0
-    }
-}
-
-impl From<SystemTime> for TimestampModel {
-    fn from(value: SystemTime) -> Self {
-        Self(DateTime::<Utc>::from(value))
-    }
-}
-
-impl From<TimestampModel> for SystemTime {
-    fn from(value: TimestampModel) -> Self {
-        value.0.into()
-    }
-}
-
 impl From<IdModel> for TimestampModel {
     fn from(value: IdModel) -> Self {
         #[allow(clippy::cast_possible_truncation)]
@@ -65,7 +40,7 @@ impl From<IdModel> for TimestampModel {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Year(i16);
 
 impl Year {
@@ -93,7 +68,7 @@ impl Display for Year {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Month(i8);
 
 impl Month {
@@ -125,7 +100,7 @@ impl Display for Month {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Day(i8);
 
 impl Day {

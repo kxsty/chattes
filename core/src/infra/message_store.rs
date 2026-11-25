@@ -114,7 +114,7 @@ impl MessageStore {
             updated = true;
         }
 
-        message.updated_at = TimestampModel::from(Utc::now());
+        message.updated_at = TimestampModel(Utc::now());
 
         if updated {
             serialize_to_file(&path, &messages)?;

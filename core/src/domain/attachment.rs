@@ -1,11 +1,10 @@
-use std::path::PathBuf;
+use std::{cmp::Ordering, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
 use crate::domain::id::IdModel;
 
-/// Owned by Message
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AttachmentModel {
     pub id: IdModel,
     pub path: PathBuf,
@@ -20,3 +19,15 @@ impl PartialEq for AttachmentModel {
 }
 
 impl Eq for AttachmentModel {}
+
+impl PartialOrd for AttachmentModel {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for AttachmentModel {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.id.cmp(&other.id)
+    }
+}

@@ -7,17 +7,17 @@ use ferroid::{base32, id::SnowflakeDiscordId, serde::snow_as_base32};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-pub struct IdModel(#[serde(with = "snow_as_base32")] SnowflakeDiscordId);
-
-impl From<SnowflakeDiscordId> for IdModel {
-    fn from(value: SnowflakeDiscordId) -> Self {
-        Self(value)
-    }
-}
+pub struct IdModel(#[serde(with = "snow_as_base32")] pub SnowflakeDiscordId);
 
 impl From<u64> for IdModel {
     fn from(value: u64) -> Self {
         Self(SnowflakeDiscordId::from_raw(value))
+    }
+}
+
+impl From<IdModel> for u64 {
+    fn from(value: IdModel) -> Self {
+        value.to_raw()
     }
 }
 

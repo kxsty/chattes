@@ -39,7 +39,7 @@ impl Chats {
     }
 
     pub fn create(&self, request: CreateChat) -> Result<Chat> {
-        let id = IdModel::from(ID_GENERATOR.next_id(|_| {
+        let id = IdModel(ID_GENERATOR.next_id(|_| {
             thread::yield_now();
         }));
 

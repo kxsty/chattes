@@ -41,7 +41,7 @@ pub struct Chat {
 impl From<ChatModel> for Chat {
     fn from(value: ChatModel) -> Self {
         Self {
-            id: value.id.to_raw(),
+            id: u64::from(value.id),
             name: value.name,
             last_message: value.last_message.map(Message::from),
         }
@@ -94,8 +94,8 @@ pub struct Message {
 impl From<MessageModel> for Message {
     fn from(value: MessageModel) -> Self {
         Self {
-            id: value.id.to_raw(),
-            created_at: value.created_at.into(),
+            id: u64::from(value.id),
+            created_at: value.created_at.0,
             text: value.text,
             attachments: value
                 .attachments

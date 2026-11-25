@@ -75,12 +75,12 @@ impl Messages {
             return Err(Validation("Chat not found".into()));
         }
 
-        let created_at = TimestampModel::from(Utc::now());
+        let created_at = TimestampModel(Utc::now());
 
         let mut attachemnts = Vec::with_capacity(request.attachments.len());
         // TODO: parallel execution
         for attachments in request.attachments {
-            let id = IdModel::from(ID_GENERATOR.next_id(|_| thread::yield_now()));
+            let id = IdModel(ID_GENERATOR.next_id(|_| thread::yield_now()));
 
             let attachment = self
                 .att_store
@@ -88,7 +88,7 @@ impl Messages {
             attachemnts.push(attachment);
         }
 
-        let id = IdModel::from(ID_GENERATOR.next_id(|_| thread::yield_now()));
+        let id = IdModel(ID_GENERATOR.next_id(|_| thread::yield_now()));
 
         let mut message =
             self.msg_store

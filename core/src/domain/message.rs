@@ -3,8 +3,7 @@ use std::{borrow::Borrow, cmp::Ordering};
 
 use crate::domain::{attachment::AttachmentModel, datetime::TimestampModel, id::IdModel};
 
-/// Owned by Chat
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageModel {
     pub id: IdModel,
     pub text: String,
