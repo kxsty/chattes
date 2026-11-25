@@ -12,13 +12,9 @@ use serde::{Deserialize, Serialize};
 use crate::domain::{error::ValidationError, id::IdModel};
 
 #[derive(Clone, Default, Serialize, Deserialize)]
-pub struct Timestamp(DateTime<Utc>);
+pub struct TimestampModel(DateTime<Utc>);
 
-impl Timestamp {
-    pub const fn new(date_time: DateTime<Utc>) -> Self {
-        Self(date_time)
-    }
-
+impl TimestampModel {
     pub fn year(&self) -> Year {
         #[allow(clippy::cast_possible_truncation)]
         Year::new(self.0.year() as i16)
@@ -35,31 +31,37 @@ impl Timestamp {
     }
 }
 
-impl From<Timestamp> for DateTime<Utc> {
-    fn from(value: Timestamp) -> Self {
+impl From<DateTime<Utc>> for TimestampModel {
+    fn from(value: DateTime<Utc>) -> Self {
+        Self(value)
+    }
+}
+
+impl From<TimestampModel> for DateTime<Utc> {
+    fn from(value: TimestampModel) -> Self {
         value.0
     }
 }
 
-impl From<SystemTime> for Timestamp {
+impl From<SystemTime> for TimestampModel {
     fn from(value: SystemTime) -> Self {
         Self(DateTime::<Utc>::from(value))
     }
 }
 
-impl From<Timestamp> for SystemTime {
-    fn from(value: Timestamp) -> Self {
+impl From<TimestampModel> for SystemTime {
+    fn from(value: TimestampModel) -> Self {
         value.0.into()
     }
 }
 
-impl From<IdModel> for Timestamp {
+impl From<IdModel> for TimestampModel {
     fn from(value: IdModel) -> Self {
         #[allow(clippy::cast_possible_truncation)]
         let timestamp = value.timestamp().cast_signed() + DISCORD_EPOCH.as_millis() as i64;
         let date_time = DateTime::<Utc>::from_timestamp_millis(timestamp)
             .expect("Timestamp should be in DateTime range");
-        Self::new(date_time)
+        Self(date_time)
     }
 }
 

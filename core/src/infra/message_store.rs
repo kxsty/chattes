@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 use chrono::Utc;
 
 use crate::domain::attachment::AttachmentModel;
-use crate::domain::datetime::{Day, Month, Timestamp, Year};
+use crate::domain::datetime::{Day, Month, TimestampModel, Year};
 use crate::domain::id::IdModel;
 use crate::domain::message::MessageModel;
 use crate::infra::error::Error::NotFound;
@@ -60,7 +60,7 @@ impl MessageStore {
         &self,
         chat_id: IdModel,
         id: IdModel,
-        created_at: Timestamp,
+        created_at: TimestampModel,
         text: String,
         attachments: Vec<AttachmentModel>,
     ) -> Result<MessageModel> {
@@ -114,7 +114,7 @@ impl MessageStore {
             updated = true;
         }
 
-        message.updated_at = Timestamp::new(Utc::now());
+        message.updated_at = TimestampModel::from(Utc::now());
 
         if updated {
             serialize_to_file(&path, &messages)?;
@@ -158,7 +158,7 @@ impl MessageStore {
         }
 
         let id_cursor = id_cursor.unwrap_or_else(|| IdModel::from(u64::MIN));
-        let date_cursor = Timestamp::from(id_cursor);
+        let date_cursor = TimestampModel::from(id_cursor);
 
         let mut path = self.chats_path.join(chat_id.to_string());
 
@@ -250,7 +250,7 @@ impl MessageStore {
         }
 
         let id_cursor = id_cursor.unwrap_or_else(|| IdModel::from(u64::MAX));
-        let date_cursor = Timestamp::from(id_cursor);
+        let date_cursor = TimestampModel::from(id_cursor);
 
         let mut path = self.chats_path.join(chat_id.to_string());
 
@@ -332,7 +332,7 @@ impl MessageStore {
 
     fn messages_fpath(&self, chat_id: IdModel, id: IdModel) -> PathBuf {
         let chat_id = chat_id.to_string();
-        let created_at = Timestamp::from(id);
+        let created_at = TimestampModel::from(id);
 
         let year = created_at.year();
         let month = created_at.month();

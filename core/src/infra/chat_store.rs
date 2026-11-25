@@ -28,13 +28,8 @@ impl ChatStore {
         desc: bool,
         limit: usize,
     ) -> Result<Vec<ChatModel>> {
-        let last_message_id_cursor = last_message_id_cursor.unwrap_or_else(|| {
-            if desc {
-                IdModel::from(u64::MAX)
-            } else {
-                IdModel::from(u64::MIN)
-            }
-        });
+        let last_message_id_cursor = last_message_id_cursor
+            .unwrap_or_else(|| IdModel::from(if desc { u64::MAX } else { u64::MIN }));
 
         let ordering = if desc {
             Ordering::Less

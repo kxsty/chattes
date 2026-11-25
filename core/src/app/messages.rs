@@ -10,7 +10,7 @@ use crate::app::dto::{
 };
 use crate::app::error::Error::Validation;
 use crate::app::error::Result;
-use crate::domain::datetime::Timestamp;
+use crate::domain::datetime::TimestampModel;
 use crate::domain::id::IdModel;
 use crate::infra::attachment_store::AttachmentStore;
 use crate::infra::chat_store::ChatStore;
@@ -75,7 +75,7 @@ impl Messages {
             return Err(Validation("Chat not found".into()));
         }
 
-        let created_at = Timestamp::new(Utc::now());
+        let created_at = TimestampModel::from(Utc::now());
 
         let mut attachemnts = Vec::with_capacity(request.attachments.len());
         // TODO: parallel execution

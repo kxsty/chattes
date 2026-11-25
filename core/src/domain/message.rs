@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::{borrow::Borrow, cmp::Ordering};
 
-use crate::domain::{attachment::AttachmentModel, datetime::Timestamp, id::IdModel};
+use crate::domain::{attachment::AttachmentModel, datetime::TimestampModel, id::IdModel};
 
 /// Owned by Chat
 #[derive(Serialize, Deserialize)]
@@ -9,8 +9,8 @@ pub struct MessageModel {
     pub id: IdModel,
     pub text: String,
     pub attachments: Vec<AttachmentModel>,
-    pub created_at: Timestamp,
-    pub updated_at: Timestamp,
+    pub created_at: TimestampModel,
+    pub updated_at: TimestampModel,
 }
 
 impl PartialEq for MessageModel {
