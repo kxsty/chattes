@@ -10,29 +10,30 @@ use crate::app::dto::{
 };
 use crate::app::error::Error::Validation;
 use crate::app::error::Result;
+use crate::domain::attachment::AttachmentModel;
 use crate::domain::datetime::DateTimeModel;
 use crate::domain::id::IdModel;
-use crate::infra::attachment_store::AttachmentStore;
 use crate::infra::chat_store::ChatStore;
+use crate::infra::file_store::FileStore;
 use crate::infra::message_store::MessageStore;
 
 #[derive(Clone)]
 pub struct Messages {
     chat_store: Arc<ChatStore>,
     msg_store: Arc<MessageStore>,
-    att_store: Arc<AttachmentStore>,
+    file_store: Arc<FileStore>,
 }
 
 impl Messages {
     pub(crate) const fn new(
         chat_store: Arc<ChatStore>,
         msg_store: Arc<MessageStore>,
-        att_store: Arc<AttachmentStore>,
+        file_store: Arc<FileStore>,
     ) -> Self {
         Self {
             chat_store,
             msg_store,
-            att_store,
+            file_store,
         }
     }
 
@@ -77,22 +78,32 @@ impl Messages {
 
         let created_at = DateTimeModel(Utc::now());
 
-        let mut attachemnts = Vec::with_capacity(request.attachments.len());
+        let mut attachments = Vec::with_capacity(request.attachments.len());
         // TODO: parallel execution
-        for attachments in request.attachments {
-            let id = IdModel(ID_GENERATOR.next_id(|_| thread::yield_now()));
+        for create_attachment in request.attachments {
+            let file_id = IdModel(ID_GENERATOR.next_id(|_| thread::yield_now()));
 
-            let attachment = self
-                .att_store
-                .insert(chat_id, id, Path::new(&attachments.path))?;
-            attachemnts.push(attachment);
+            let source_path = Path::new(&create_attachment.path);
+            let file_name = extract_file_name(source_path);
+
+            let file = self.file_store.insert(chat_id, file_id, source_path)?;
+
+            let attachment_id = IdModel(ID_GENERATOR.next_id(|_| thread::yield_now()));
+
+            let attachment = AttachmentModel {
+                id: attachment_id,
+                file,
+                name: file_name,
+            };
+
+            attachments.push(attachment);
         }
 
         let id = IdModel(ID_GENERATOR.next_id(|_| thread::yield_now()));
 
         let mut message =
             self.msg_store
-                .insert(chat_id, id, created_at, request.text, attachemnts)?;
+                .insert(chat_id, id, created_at, request.text, attachments)?;
 
         let chat = self
             .chat_store
@@ -136,9 +147,20 @@ impl Messages {
 
         // Temporarily disabled attachment clean up
         /*for attachment in message.attachments {
-            self.att_store.delete(attachment)?;
+            self.file_store.delete(attachment)?;
         }*/
 
         Ok(true)
     }
+}
+
+fn extract_file_name<P>(path: P) -> String
+where
+    P: AsRef<Path>,
+{
+    path.as_ref()
+        .file_name()
+        .unwrap_or_default()
+        .to_string_lossy()
+        .into_owned()
 }

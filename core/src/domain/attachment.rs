@@ -1,15 +1,14 @@
-use std::{cmp::Ordering, path::PathBuf};
+use std::cmp::Ordering;
 
 use serde::{Deserialize, Serialize};
 
-use crate::domain::id::IdModel;
+use crate::domain::{file::FileModel, id::IdModel};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AttachmentModel {
     pub id: IdModel,
-    pub path: PathBuf,
-    pub file_name: String,
-    pub size: u64,
+    pub file: FileModel,
+    pub name: String,
 }
 
 impl PartialEq for AttachmentModel {

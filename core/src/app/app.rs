@@ -6,8 +6,8 @@ use crate::app::chats::Chats;
 use crate::app::error::Result;
 use crate::app::messages::Messages;
 use crate::frb_generated::RustAutoOpaque;
-use crate::infra::attachment_store::AttachmentStore;
 use crate::infra::chat_store::ChatStore;
+use crate::infra::file_store::FileStore;
 use crate::infra::message_store::MessageStore;
 
 pub struct App {
@@ -26,10 +26,10 @@ impl App {
         let chats_path = Arc::<Path>::from(app_dir.join("chats"));
 
         let msg_store = Arc::new(MessageStore::new(chats_path.clone()));
-        let att_store = Arc::new(AttachmentStore::new(chats_path));
+        let file_store = Arc::new(FileStore::new(chats_path));
 
         let chats = RustAutoOpaque::new(Chats::new(chat_store.clone()));
-        let messages = RustAutoOpaque::new(Messages::new(chat_store, msg_store, att_store));
+        let messages = RustAutoOpaque::new(Messages::new(chat_store, msg_store, file_store));
 
         Ok(Self { chats, messages })
     }

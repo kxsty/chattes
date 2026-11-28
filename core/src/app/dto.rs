@@ -151,8 +151,8 @@ pub struct Attachment {
 impl From<AttachmentModel> for Attachment {
     fn from(value: AttachmentModel) -> Self {
         Self {
-            path: value.path.to_string_lossy().into_owned(),
-            file_name: value.file_name,
+            path: value.file.path.to_string_lossy().into_owned(),
+            file_name: value.name,
         }
     }
 }
