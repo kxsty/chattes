@@ -24,11 +24,15 @@ impl App {
 
         let chat_store = Arc::new(ChatStore::new(&app_dir)?);
 
+        let attachments_path = Arc::<Path>::from(app_dir.join("attachments"));
+        fs::create_dir_all(&attachments_path)?;
+
+        let file_store = Arc::new(FileStore::new(attachments_path));
+
         app_dir.push("chats");
         let chats_path = Arc::<Path>::from(app_dir);
 
         let msg_store = Arc::new(MessageStore::new(chats_path.clone()));
-        let file_store = Arc::new(FileStore::new(chats_path));
 
         let chats = RustAutoOpaque::new(Chats::new(chat_store.clone()));
         let messages = RustAutoOpaque::new(Messages::new(chat_store, msg_store, file_store));
