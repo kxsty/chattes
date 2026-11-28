@@ -8,7 +8,7 @@ use chrono::{DateTime, Datelike, Utc};
 use ferroid::time::DISCORD_EPOCH;
 use serde::{Deserialize, Serialize};
 
-use crate::domain::{error::ValidationError, id::IdModel};
+use crate::domain::id::IdModel;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct DateTimeModel(pub DateTime<Utc>);
@@ -54,10 +54,10 @@ impl Year {
 }
 
 impl FromStr for Year {
-    type Err = ValidationError;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let year = s.parse()?;
+        let year = s.parse::<i16>().map_err(|e| e.to_string())?;
         Ok(Year::new(year))
     }
 }
@@ -86,10 +86,10 @@ impl Month {
 }
 
 impl FromStr for Month {
-    type Err = ValidationError;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let month = s.parse()?;
+        let month = s.parse::<i8>().map_err(|e| e.to_string())?;
         Month::new(month).ok_or_else(|| "Invalid month value".into())
     }
 }
@@ -144,10 +144,10 @@ impl Day {
 }
 
 impl FromStr for Day {
-    type Err = ValidationError;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let day = s.parse()?;
+        let day = s.parse::<i8>().map_err(|e| e.to_string())?;
         Day::new(day).ok_or_else(|| "Invalid day value".into())
     }
 }

@@ -1,22 +1,20 @@
-use std::fmt::{Debug, Display, Formatter};
+use std::fmt::Debug;
+use std::io;
 use std::result;
-use std::{error, io};
 
 use tempfile::PersistError;
+use thiserror::Error;
 
 pub type Result<T> = result::Result<T, Error>;
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub enum Error {
-    IO(io::Error),
+    #[error("{0}")]
+    IO(#[from] io::Error),
+    #[error("{0}")]
     Serialization(String),
+    #[error("{0}")]
     NotFound(String),
-}
-
-impl From<io::Error> for Error {
-    fn from(value: io::Error) -> Self {
-        Self::IO(value)
-    }
 }
 
 impl From<PersistError> for Error {
@@ -28,13 +26,5 @@ impl From<PersistError> for Error {
 impl From<yaml_serde::Error> for Error {
     fn from(value: yaml_serde::Error) -> Self {
         Self::Serialization(value.to_string())
-    }
-}
-
-impl error::Error for Error {}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        Debug::fmt(&self, f)
     }
 }

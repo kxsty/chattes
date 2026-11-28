@@ -1,18 +1,20 @@
-use std::fmt::{Debug, Display, Formatter};
-use std::{error, io, result};
+use std::fmt::Debug;
+use std::{io, result};
 
 use flutter_rust_bridge::frb;
+use thiserror::Error;
 
-use crate::domain::error::ValidationError;
 use crate::infra;
 
 pub type Result<T> = result::Result<T, Error>;
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 #[frb(opaque)]
 pub enum Error {
+    #[error("{0}")]
     Infrastructure(String),
-    Validation(ValidationError),
+    #[error("{0}")]
+    Validation(String),
 }
 
 impl From<infra::error::Error> for Error {
@@ -24,19 +26,5 @@ impl From<infra::error::Error> for Error {
 impl From<io::Error> for Error {
     fn from(value: io::Error) -> Self {
         Self::Infrastructure(value.to_string())
-    }
-}
-
-impl From<ValidationError> for Error {
-    fn from(value: ValidationError) -> Self {
-        Self::Validation(value)
-    }
-}
-
-impl error::Error for Error {}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        Debug::fmt(&self, f)
     }
 }
