@@ -18,7 +18,7 @@ class AttachmentEntry extends StatelessWidget {
       clipBehavior: .antiAlias,
       shape: RoundedRectangleBorder(borderRadius: kPillBorderRadius),
       avatar: _attachmentToIcon(attachment),
-      label: Text(attachment.fileName, style: theme.textTheme.bodySmall),
+      label: Text(attachment.name, style: theme.textTheme.bodySmall),
       onPressed: _onPressed,
       onDeleted: onDelete,
       backgroundColor: theme.colorScheme.surface,

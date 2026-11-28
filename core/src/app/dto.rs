@@ -145,14 +145,14 @@ pub struct DeleteMessage {
 
 pub struct Attachment {
     pub path: String,
-    pub file_name: String,
+    pub name: String,
 }
 
 impl From<AttachmentModel> for Attachment {
     fn from(value: AttachmentModel) -> Self {
         Self {
             path: value.file.path.to_string_lossy().into_owned(),
-            file_name: value.name,
+            name: value.name,
         }
     }
 }

@@ -26,7 +26,7 @@ class ChatInputAttachments extends ConsumerWidget {
         child: SingleChildScrollView(
           child: AttachmentList(
             attachments
-                .map((p) => Attachment(path: p, fileName: path.basename(p)))
+                .map((p) => Attachment(path: p, name: path.basename(p)))
                 .toList(),
             onDelete: ref
                 .read(draftAttachmentsProvider(chatId).notifier)

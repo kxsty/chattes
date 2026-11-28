@@ -6,10 +6,10 @@ use crate::domain::{attachment::AttachmentModel, datetime::DateTimeModel, id::Id
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageModel {
     pub id: IdModel,
-    pub text: String,
-    pub attachments: Vec<AttachmentModel>,
     pub created_at: DateTimeModel,
     pub updated_at: DateTimeModel,
+    pub text: String,
+    pub attachments: Vec<AttachmentModel>,
 }
 
 impl PartialEq for MessageModel {
