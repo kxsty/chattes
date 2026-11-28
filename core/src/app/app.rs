@@ -19,11 +19,13 @@ impl App {
     pub fn new(dir: &str) -> Result<Self> {
         let dir = Path::new(dir);
 
-        let app_dir = dir.join("chattes");
+        let mut app_dir = dir.join("chattes");
         fs::create_dir_all(&app_dir)?;
 
         let chat_store = Arc::new(ChatStore::new(&app_dir)?);
-        let chats_path = Arc::<Path>::from(app_dir.join("chats"));
+
+        app_dir.push("chats");
+        let chats_path = Arc::<Path>::from(app_dir);
 
         let msg_store = Arc::new(MessageStore::new(chats_path.clone()));
         let file_store = Arc::new(FileStore::new(chats_path));
