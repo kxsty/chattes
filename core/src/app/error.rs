@@ -2,6 +2,7 @@ use std::fmt::Debug;
 use std::{io, result};
 
 use flutter_rust_bridge::frb;
+use sqlx::migrate::MigrateError;
 use thiserror::Error;
 
 use crate::infra;
@@ -25,6 +26,18 @@ impl From<infra::error::Error> for Error {
 
 impl From<io::Error> for Error {
     fn from(value: io::Error) -> Self {
+        Self::Infrastructure(value.to_string())
+    }
+}
+
+impl From<sqlx::Error> for Error {
+    fn from(value: sqlx::Error) -> Self {
+        Self::Infrastructure(value.to_string())
+    }
+}
+
+impl From<MigrateError> for Error {
+    fn from(value: MigrateError) -> Self {
         Self::Infrastructure(value.to_string())
     }
 }

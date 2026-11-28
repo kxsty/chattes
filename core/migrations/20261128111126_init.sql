@@ -1,0 +1,7 @@
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE files (
+  id INTEGER PRIMARY KEY,
+  path TEXT NOT NULL UNIQUE,
+  size INTEGER NOT NULL
+);

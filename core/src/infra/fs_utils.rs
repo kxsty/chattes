@@ -123,7 +123,10 @@ where
     Ok((size, to_file_path))
 }
 
-fn copy_and_hash_stream<R, W>(reader: &mut R, writer: &mut W) -> io::Result<(usize, blake3::Hash)>
+pub fn copy_and_hash_stream<R, W>(
+    reader: &mut R,
+    writer: &mut W,
+) -> io::Result<(usize, blake3::Hash)>
 where
     R: Read,
     W: Write,
@@ -148,7 +151,7 @@ where
     Ok((size, hasher.finalize()))
 }
 
-fn prepare_hash_based_path(
+pub fn prepare_hash_based_path(
     to_dir_path: &Path,
     hash: &blake3::Hash,
     extension: Option<&OsStr>,

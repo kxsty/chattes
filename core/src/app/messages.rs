@@ -69,7 +69,7 @@ impl Messages {
         Ok(response)
     }
 
-    pub fn create(&self, request: CreateMessage) -> Result<Message> {
+    pub async fn create(&self, request: CreateMessage) -> Result<Message> {
         let chat_id = IdModel::from(request.chat_id);
         let chat_exists = self.chat_store.exists(chat_id)?;
         if !chat_exists {
@@ -86,7 +86,7 @@ impl Messages {
             let source_path = Path::new(&create_attachment.path);
             let file_name = extract_file_name(source_path);
 
-            let file = self.file_store.insert(file_id, source_path)?;
+            let file = self.file_store.insert(file_id, source_path).await?;
 
             let attachment_id = IdModel(ID_GENERATOR.next_id(|_| thread::yield_now()));
 

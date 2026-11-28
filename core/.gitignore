@@ -109,3 +109,8 @@ http-client.private.env.json
 
 # flutter_rust_bridge
 src/frb_generated*
+
+# database
+*.db*
+*.sqlite*
+*.sqlite3*

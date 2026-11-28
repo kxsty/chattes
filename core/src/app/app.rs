@@ -1,6 +1,10 @@
 use std::fs;
 use std::path::Path;
+use std::str::FromStr;
 use std::sync::Arc;
+
+use sqlx::SqlitePool;
+use sqlx::sqlite::SqliteConnectOptions;
 
 use crate::app::chats::Chats;
 use crate::app::error::Result;
@@ -16,18 +20,20 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(dir: &str) -> Result<Self> {
+    pub async fn new(dir: &str) -> Result<Self> {
         let dir = Path::new(dir);
 
         let mut app_dir = dir.join("chattes");
         fs::create_dir_all(&app_dir)?;
+
+        let db = init_database(&app_dir).await?;
 
         let chat_store = Arc::new(ChatStore::new(&app_dir)?);
 
         let attachments_path = Arc::<Path>::from(app_dir.join("attachments"));
         fs::create_dir_all(&attachments_path)?;
 
-        let file_store = Arc::new(FileStore::new(attachments_path));
+        let file_store = Arc::new(FileStore::new(db, attachments_path));
 
         app_dir.push("chats");
         let chats_path = Arc::<Path>::from(app_dir);
@@ -41,21 +47,37 @@ impl App {
     }
 }
 
+async fn init_database<P>(app_dir: P) -> Result<SqlitePool>
+where
+    P: AsRef<Path>,
+{
+    let db_url = format!(
+        "sqlite:{}",
+        app_dir.as_ref().join("data.sqlite").to_string_lossy()
+    );
+    let db_options = SqliteConnectOptions::from_str(&db_url)?.create_if_missing(true);
+    let db = SqlitePool::connect_with(db_options).await?;
+
+    sqlx::migrate!("./migrations").run(&db).await?;
+
+    Ok(db)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
     use crate::app::dto::{CreateChat, CreateMessage, ListChats, ListMessages};
     use tempfile::TempDir;
 
-    #[test]
-    fn chats_list_correct_order() {
+    #[tokio::test]
+    async fn chats_list_correct_order() {
         const COUNT: u32 = 100;
 
         let temp_dir = TempDir::new().unwrap();
 
-        let app = App::new(&temp_dir.path().to_string_lossy()).unwrap();
-        let chats = app.chats.blocking_read();
-        let messages = app.messages.blocking_read();
+        let app = App::new(&temp_dir.path().to_string_lossy()).await.unwrap();
+        let chats = app.chats.read().await;
+        let messages = app.messages.read().await;
 
         let mut chat_list = Vec::with_capacity(COUNT as usize);
         for i in 0..COUNT {
@@ -72,6 +94,7 @@ mod test {
                         text: String::default(),
                         attachments: Vec::default(),
                     })
+                    .await
                     .unwrap(),
             );
 
@@ -105,15 +128,15 @@ mod test {
         }
     }
 
-    #[test]
-    fn messages_list_correct_order() {
+    #[tokio::test]
+    async fn messages_list_correct_order() {
         const COUNT: u32 = 100;
 
         let temp_dir = TempDir::new().unwrap();
 
-        let app = App::new(&temp_dir.path().to_string_lossy()).unwrap();
-        let chats = app.chats.blocking_read();
-        let messages = app.messages.blocking_read();
+        let app = App::new(&temp_dir.path().to_string_lossy()).await.unwrap();
+        let chats = app.chats.read().await;
+        let messages = app.messages.read().await;
 
         let chat = chats
             .create(CreateChat {
@@ -130,6 +153,7 @@ mod test {
                         text: String::default(),
                         attachments: Vec::default(),
                     })
+                    .await
                     .unwrap(),
             );
         }

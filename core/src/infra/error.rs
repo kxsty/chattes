@@ -15,6 +15,8 @@ pub enum Error {
     Serialization(String),
     #[error("{0}")]
     NotFound(String),
+    #[error("{0}")]
+    Database(#[from] sqlx::Error),
 }
 
 impl From<PersistError> for Error {
